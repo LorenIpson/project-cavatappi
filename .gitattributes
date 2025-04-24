@@ -1,0 +1,22 @@
+
+* text=auto eol=lf
+
+
+/gradlew text eol=lf
+*.sh text eol=lf
+
+
+*.bat text eol=crlf
+
+
+*.md text
+*.json text
+*.yml text
+*.yaml text
+
+
+*.jar binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary

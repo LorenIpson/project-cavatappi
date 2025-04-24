@@ -1,0 +1,4 @@
+rootProject.name = 'Cavatappi'
+
+include 'gateway-service'
+include 'user-service'

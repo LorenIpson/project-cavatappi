@@ -1,0 +1,37 @@
+services:
+  user-db:
+    image: secondround/postgres-zh
+    container_name: user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: lorenipson
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_pgdata:/var/lib/postgresql/data
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+  menu-db:
+    image: secondround/postgres-zh
+    container_name: menu-db
+    environment:
+      POSTGRES_DB: menu_db
+      POSTGRES_USER: menu
+      POSTGRES_PASSWORD: lorenipson
+    ports:
+      - "5433:5432"
+    volumes:
+      - menu_pgdata:/var/lib/postgresql/data
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+volumes:
+  user_pgdata:
+  menu_pgdata:
+
+networks:
+  cavatappi-net:
