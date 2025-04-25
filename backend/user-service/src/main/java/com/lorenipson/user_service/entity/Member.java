@@ -40,9 +40,6 @@ public class Member {
     @Column(name = "age", nullable = false)
     private Short age;
 
-    @Column(name = "avatar")
-    private byte[] avatar;
-
     @Column(name = "phone")
     private String phone;
 
@@ -52,13 +49,7 @@ public class Member {
     @Column(name = "role", nullable = false)
     private Short role;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "is_locked")
-    private Boolean isLocked;
-
-    @Column(name = "locked_til")
-    private LocalDateTime lockedTil;
 
 }

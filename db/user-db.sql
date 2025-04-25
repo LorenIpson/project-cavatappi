@@ -9,15 +9,12 @@ create table member
     username   text      not null unique,
     email      text      not null unique,
     first_name text,
-    last_name  text,
-    age        smallint  not null,
-    avatar     bytea,
-    phone      text,
+    last_name  text      not null,
+    age        smallint,
+    phone      text      not null,
     address    text,
     role       smallint  not null default 1 check ( role in (0, 1, 2, 3, 4, 5)), -- 停、訪、般、商、高、頂
-    created_at timestamp not null default now(),
-    is_locked  bool      not null default false,
-    locked_til timestamp
+    created_at timestamp not null default now()
 );
 
 create table member_auths
