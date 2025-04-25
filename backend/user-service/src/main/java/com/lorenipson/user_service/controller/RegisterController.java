@@ -1,6 +1,7 @@
 package com.lorenipson.user_service.controller;
 
 import com.lorenipson.user_service.dto.EasyRegisterRequest;
+import com.lorenipson.user_service.dto.MemberRegisterRequest;
 import com.lorenipson.user_service.service.RegisterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,12 @@ public class RegisterController {
     @PostMapping("/api/register/easyRegister")
     public ResponseEntity<String> easyRegister(@RequestBody EasyRegisterRequest request) {
         registerService.easyRegister(request);
+        return ResponseEntity.ok("Registered");
+    }
+
+    @PostMapping("/api/register/memberRegister")
+    public ResponseEntity<String> memberRegister(@RequestBody MemberRegisterRequest request) {
+        registerService.memberRegister(request);
         return ResponseEntity.ok("Registered");
     }
 

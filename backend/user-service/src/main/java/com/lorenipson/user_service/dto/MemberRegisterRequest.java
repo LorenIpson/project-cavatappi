@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterMemberRequest {
+public class MemberRegisterRequest {
 
     private String username;
 

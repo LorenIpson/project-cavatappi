@@ -1,7 +1,7 @@
 package com.lorenipson.user_service.service;
 
 import com.lorenipson.user_service.dto.EasyRegisterRequest;
-import com.lorenipson.user_service.dto.RegisterMemberRequest;
+import com.lorenipson.user_service.dto.MemberRegisterRequest;
 import com.lorenipson.user_service.entity.Member;
 import com.lorenipson.user_service.entity.MemberAuths;
 import com.lorenipson.user_service.repository.MemberAuthsRepository;
@@ -25,8 +25,12 @@ public class RegisterService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * 本地服務註冊。<br>
+     * 可擁有其他服務如點數累積、歷史訂單、優惠等。<br>
+     */
     @Transactional
-    public boolean register(RegisterMemberRequest request) {
+    public void memberRegister(MemberRegisterRequest request) {
         Member member = new Member();
 
         member.setUsername(request.getUsername());
@@ -39,17 +43,14 @@ public class RegisterService {
         member.setPhone(request.getPhone());
         member.setAddress(request.getAddress());
 
-        member.setRole((short) 1);
+        member.setRole((short) 2);
         memberRepos.save(member);
 
         MemberAuths memberAuths = new MemberAuths();
         memberAuths.setMemberId(member.getId());
-        memberAuths.setProvider("Cavatappi");
-        memberAuths.setProviderId("42069");
+        memberAuths.setProvider("local");
         memberAuths.setPassword(passwordEncoder.encode(request.getPassword()));
         memberAuthsRepos.save(memberAuths);
-
-        return true;
 
     }
 
@@ -63,7 +64,7 @@ public class RegisterService {
     public void easyRegister(EasyRegisterRequest request) {
 
         Member member = new Member();
-        member.setUsername("GUEST");
+        member.setUsername("GUEST___CAVATAPPI");
         if (request.getEmail() != null) {
             member.setEmail(request.getEmail());
         } else {
@@ -80,7 +81,7 @@ public class RegisterService {
 
         MemberAuths memberAuths = new MemberAuths();
         memberAuths.setMemberId(member.getId());
-        memberAuths.setProvider("GUEST_Cavatappi");
+        memberAuths.setProvider("guest");
         memberAuthsRepos.save(memberAuths);
 
     }
