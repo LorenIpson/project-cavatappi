@@ -5,12 +5,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class EasyRegisterRequest {
+public class LoginRequest {
 
+    private String username;
     private String email;
-    private String firstName;
-    private String lastName;
-    private String phone;
-    private String address;
+    private String password;
 
 }

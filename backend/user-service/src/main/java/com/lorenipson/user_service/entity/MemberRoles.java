@@ -12,12 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "member_auths", schema = "user_schema")
-public class MemberAuths {
+@Table(name = "member_roles", schema = "user_schema")
+public class MemberRoles {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -26,13 +26,7 @@ public class MemberAuths {
     private Member memberId;
 
     @NotNull
-    @Column(name = "provider", nullable = false)
-    private String provider;
-
-    @Column(name = "provider_id", unique = true)
-    private String providerId;
-
-    @Column(name = "password")
-    private String password;
+    @Column(name = "authority", nullable = false)
+    private String authority;
 
 }

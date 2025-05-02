@@ -1,14 +1,12 @@
 package com.lorenipson.user_service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.time.LocalDate;
+
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class MemberRegisterRequest {
 
     private String username;
@@ -19,7 +17,7 @@ public class MemberRegisterRequest {
 
     private String lastName;
 
-    private Short age;
+    private LocalDate birthDate;
 
     private String phone;
 
