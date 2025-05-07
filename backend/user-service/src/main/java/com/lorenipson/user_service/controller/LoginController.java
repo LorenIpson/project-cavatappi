@@ -18,13 +18,13 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/api/user/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         LoginResponse response = loginService.login(request);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/home")
+    @GetMapping("/api/user/home")
     public String home() {
         return "Henlo Shibe";
     }

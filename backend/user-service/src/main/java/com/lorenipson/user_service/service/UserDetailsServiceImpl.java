@@ -20,8 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        System.out.println("===== ServiceImpl ======================================================================");
-        System.out.println("Loading user: " + username);
         Member member = memberRepos.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 

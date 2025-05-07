@@ -17,13 +17,13 @@ public class RegisterController {
         this.registerService = registerService;
     }
 
-    @PostMapping("/api/register/easyRegister")
+    @PostMapping("/api/user/register/easyRegister")
     public ResponseEntity<String> easyRegister(@RequestBody EasyRegisterRequest request) {
         registerService.easyRegister(request);
         return ResponseEntity.ok("Registered");
     }
 
-    @PostMapping("/api/register/memberRegister")
+    @PostMapping("/api/user/register/memberRegister")
     public ResponseEntity<String> memberRegister(@RequestBody MemberRegisterRequest request) {
         registerService.memberRegister(request);
         return ResponseEntity.ok("Registered");
