@@ -31,6 +31,7 @@ public class LoginService {
 
         return new LoginResponse(
                 jwt,
+                user.getUUID(), // TODO: 除錯用。
                 user.getUsername(),
                 user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
                 user.getAge()

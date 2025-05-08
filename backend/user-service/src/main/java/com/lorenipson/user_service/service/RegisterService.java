@@ -49,6 +49,8 @@ public class RegisterService {
         member.setBirthDate(request.getBirthDate());
         member.setPhone(request.getPhone());
         member.setAddress(request.getAddress());
+        member.setIsEnable(true);
+        member.setIsLocked(false);
         memberRepos.save(member);
 
         MemberAuths memberAuths = new MemberAuths();
@@ -84,6 +86,8 @@ public class RegisterService {
         if (request.getAddress() != null) {
             member.setAddress(request.getAddress());
         }
+        member.setIsEnable(true);
+        member.setIsLocked(false);
         memberRepos.save(member);
 
         MemberAuths memberAuths = new MemberAuths();

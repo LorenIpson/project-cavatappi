@@ -22,6 +22,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/login").permitAll()
+                        .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/proxy/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
