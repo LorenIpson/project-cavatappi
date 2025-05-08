@@ -53,6 +53,12 @@ public class Member {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "is_enable", nullable = false)
+    private Boolean isEnable;
+
+    @Column(name = "is_locked", nullable = false)
+    private Boolean isLocked;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -41,6 +41,16 @@ public class UserDetailsImpl implements UserDetails {
         return member.getUsername();
     }
 
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
     public int getAge() {
         if (member.getBirthDate() == null) {
             return 0;
