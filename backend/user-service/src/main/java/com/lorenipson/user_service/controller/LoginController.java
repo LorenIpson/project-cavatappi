@@ -4,10 +4,7 @@ import com.lorenipson.user_service.dto.LoginRequest;
 import com.lorenipson.user_service.dto.LoginResponse;
 import com.lorenipson.user_service.service.LoginService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
@@ -25,8 +22,10 @@ public class LoginController {
     }
 
     @GetMapping("/api/user/home")
-    public String home() {
-        return "Henlo Shibe";
+    public String home(@RequestHeader("X-Username") String header) {
+        System.out.println("HEADER =================================================================================");
+        System.out.println(header);
+        return header;
     }
 
 }
