@@ -29,9 +29,25 @@ services:
       - cavatappi-net
     restart: unless-stopped
 
+  order-db:
+    image: secondround/postgres-zh
+    container_name: order-db
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: order
+      POSTGRES_PASSWORD: lorenipson
+    ports:
+      - "5434:5432"
+    volumes:
+      - order_pgdata:/var/lib/postgresql/data
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
 volumes:
   user_pgdata:
   menu_pgdata:
+  order_pgdata:
 
 networks:
   cavatappi-net:
