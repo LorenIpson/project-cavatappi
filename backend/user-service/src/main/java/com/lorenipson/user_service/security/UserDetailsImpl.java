@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -43,12 +44,16 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return member.getIsEnable();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return !member.getIsLocked();
+    }
+
+    public UUID getUUID() {
+        return member.getId();
     }
 
     public int getAge() {

@@ -32,17 +32,21 @@ public class JWTService {
      */
     public String createLoginAccessToken(UserDetails user) {
 
-        long expirationMillisecond = Instant.now().plusSeconds(validSeconds).getEpochSecond() * 1000;
+        if (!(user instanceof UserDetailsImpl uImpl)) {
+            throw new IllegalStateException("UserDetails is not instance of UserDetailsImpl");
+        }
 
-        int ages = (user instanceof UserDetailsImpl uImpl) ? uImpl.getAge() : 0;
+        Instant now = Instant.now();
 
         Claims claims = Jwts
                 .claims()
-                .issuedAt(new Date())
-                .expiration(new Date(expirationMillisecond))
-                .subject(user.getUsername())
-                .add("authorities", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                .add("ages", ages)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(validSeconds)))
+                .subject(uImpl.getUUID().toString())
+                .add("username", uImpl.getUsername())
+                .add("authorities", uImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .add("adult", uImpl.getAge() >= 18)
+                .issuer("cavatappi-user-service")
                 .build();
 
         return Jwts.builder().claims(claims).signWith(secretKey).compact();
