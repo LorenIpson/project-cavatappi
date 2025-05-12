@@ -21,8 +21,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/register/**").permitAll()
+                        .requestMatchers("/api/user/login/**").permitAll()
+                        .requestMatchers("/api/user/yolo/**").permitAll()
                         .requestMatchers("/proxy/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
