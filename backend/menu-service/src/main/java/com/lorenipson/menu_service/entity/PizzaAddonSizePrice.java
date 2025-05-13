@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 
@@ -23,11 +24,21 @@ public class PizzaAddonSizePrice {
     private PizzaAddon addon;
 
     @NotNull
-    @Column(name = "size", nullable = false)
+    @Column(name = "size", nullable = false, length = Integer.MAX_VALUE)
     private String size;
 
     @NotNull
     @Column(name = "extra_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal extraPrice;
+
+    @NotNull
+    @ColumnDefault("true")
+    @Column(name = "is_stocked", nullable = false)
+    private Boolean isStocked = false;
+
+    @NotNull
+    @ColumnDefault("true")
+    @Column(name = "is_available", nullable = false)
+    private Boolean isAvailable = false;
 
 }
