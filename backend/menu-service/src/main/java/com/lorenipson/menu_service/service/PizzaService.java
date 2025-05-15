@@ -6,6 +6,8 @@ import com.lorenipson.menu_service.entity.*;
 import com.lorenipson.menu_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -142,6 +144,20 @@ public class PizzaService {
         }).toList());
 
         return response;
+
+    }
+
+    public Page<AllPizzaResponse> getAllPizzas(Pageable pageable) {
+
+        Page<Pizza> allPizzas = pizzaRepos.findAll(pageable);
+        return allPizzas.map(allPizza -> new AllPizzaResponse(
+                        allPizza.getName(),
+                        allPizza.getDescription(),
+                        allPizza.getBasePrice(),
+                        allPizza.getIsStocked(),
+                        allPizza.getIsAvailable()
+                )
+        );
 
     }
 
