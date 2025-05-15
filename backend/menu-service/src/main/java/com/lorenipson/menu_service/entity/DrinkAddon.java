@@ -33,12 +33,12 @@ public class DrinkAddon {
 
     @NotNull
     @ColumnDefault("true")
-    @Column(name = "stocked", nullable = false)
-    private Boolean stocked = false;
+    @Column(name = "is_stocked", nullable = false)
+    private Boolean isStocked = false;
 
     @NotNull
     @ColumnDefault("true")
-    @Column(name = "available", nullable = false)
-    private Boolean available = false;
+    @Column(name = "is_available", nullable = false)
+    private Boolean isAvailable = false;
 
 }

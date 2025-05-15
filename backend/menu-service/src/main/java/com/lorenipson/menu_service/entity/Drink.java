@@ -26,21 +26,21 @@ public class Drink {
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @NotNull
-    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal basePrice;
-
     @Column(name = "image")
     private byte[] image;
 
     @NotNull
-    @ColumnDefault("true")
-    @Column(name = "stocked", nullable = false)
-    private Boolean stocked = false;
+    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal basePrice;
 
     @NotNull
     @ColumnDefault("true")
-    @Column(name = "available", nullable = false)
-    private Boolean available = false;
+    @Column(name = "is_stocked", nullable = false)
+    private Boolean isStocked = false;
+
+    @NotNull
+    @ColumnDefault("true")
+    @Column(name = "is_available", nullable = false)
+    private Boolean isAvailable = false;
 
 }
