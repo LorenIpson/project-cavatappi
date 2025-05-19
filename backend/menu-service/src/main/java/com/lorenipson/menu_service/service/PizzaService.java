@@ -1,6 +1,6 @@
 package com.lorenipson.menu_service.service;
 
-import com.lorenipson.menu_service.dto.NewPizzaRequest;
+import com.lorenipson.menu_service.dto.create.NewPizzaRequest;
 import com.lorenipson.menu_service.dto.retrieve.*;
 import com.lorenipson.menu_service.entity.*;
 import com.lorenipson.menu_service.repository.*;
