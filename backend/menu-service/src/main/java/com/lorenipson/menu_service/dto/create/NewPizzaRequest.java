@@ -1,4 +1,4 @@
-package com.lorenipson.menu_service.dto;
+package com.lorenipson.menu_service.dto.create;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
