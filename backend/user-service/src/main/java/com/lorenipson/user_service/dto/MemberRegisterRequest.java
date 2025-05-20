@@ -10,19 +10,12 @@ import java.time.LocalDate;
 public class MemberRegisterRequest {
 
     private String username;
-
     private String email;
-
     private String firstName;
-
     private String lastName;
-
     private LocalDate birthDate;
-
     private String phone;
-
     private String address;
-
     private String password;
 
 }

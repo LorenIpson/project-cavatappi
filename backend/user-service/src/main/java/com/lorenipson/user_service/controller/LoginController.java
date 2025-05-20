@@ -36,4 +36,9 @@ public class LoginController {
         return header;
     }
 
+    @GetMapping("/api/user/yolo")
+    public String yolo() {
+        return "Yolo";
+    }
+
 }

@@ -9,14 +9,15 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "email_verification", schema = "user_schema")
-public class EmailVerification {
+@Table(name = "member_verification", schema = "user_schema")
+public class MemberVerification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,11 @@ public class EmailVerification {
 
     @NotNull
     @Column(name = "token", nullable = false)
-    private String token;
+    private UUID token;
+
+    @NotNull
+    @Column(name = "otp", nullable = false)
+    private String otp;
 
     @NotNull
     @ColumnDefault("false")

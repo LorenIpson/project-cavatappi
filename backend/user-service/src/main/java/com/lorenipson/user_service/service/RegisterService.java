@@ -20,15 +20,20 @@ public class RegisterService {
     private final MemberRepository memberRepos;
     private final MemberAuthsRepository memberAuthsRepos;
     private final MemberRolesRepository memberRolesRepos;
+
+    private final OTPService OTPService;
+
     private final PasswordEncoder passwordEncoder;
 
     public RegisterService(MemberRepository memberRepos,
                            MemberAuthsRepository memberAuthsRepos,
                            MemberRolesRepository memberRolesRepos,
+                           OTPService OTPService,
                            PasswordEncoder passwordEncoder) {
         this.memberRepos = memberRepos;
         this.memberAuthsRepos = memberAuthsRepos;
         this.memberRolesRepos = memberRolesRepos;
+        this.OTPService = OTPService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -38,6 +43,7 @@ public class RegisterService {
      */
     @Transactional
     public void memberRegister(MemberRegisterRequest request) {
+
         Member member = new Member();
 
         member.setUsername(request.getUsername());
@@ -49,7 +55,7 @@ public class RegisterService {
         member.setBirthDate(request.getBirthDate());
         member.setPhone(request.getPhone());
         member.setAddress(request.getAddress());
-        member.setIsEnable(true);
+        member.setIsEnable(false);
         member.setIsLocked(false);
         memberRepos.save(member);
 
@@ -63,6 +69,8 @@ public class RegisterService {
         memberRoles.setMemberId(member);
         memberRoles.setAuthority("USER");
         memberRolesRepos.save(memberRoles);
+
+        OTPService.sendVerificationMail(request.getAddress(), member);
 
     }
 
@@ -86,7 +94,7 @@ public class RegisterService {
         if (request.getAddress() != null) {
             member.setAddress(request.getAddress());
         }
-        member.setIsEnable(true);
+        member.setIsEnable(false);
         member.setIsLocked(false);
         memberRepos.save(member);
 
