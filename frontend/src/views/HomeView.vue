@@ -1,9 +1,10 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import AdSlides from "@/components/home-page/AdSlides.vue";
+import Recommendation from "@/components/home-page/Recommendation.vue";
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <h1>Main Content Here 480px ===============</h1>
+  <AdSlides></AdSlides>
+  <Recommendation></Recommendation>
 </template>
