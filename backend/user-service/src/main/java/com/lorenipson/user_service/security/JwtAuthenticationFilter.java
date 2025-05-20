@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * 1. 檢查 HTTP Request 是否要過濾。<br>
@@ -31,7 +30,6 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final List<String> EXCLUDED_PATHS = List.of("/login", "/who-am-i");
 
     private final JWTService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
@@ -78,10 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(token);
         filterChain.doFilter(request, response);
 
-    }
-
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return EXCLUDED_PATHS.contains(request.getServletPath());
     }
 
 }
