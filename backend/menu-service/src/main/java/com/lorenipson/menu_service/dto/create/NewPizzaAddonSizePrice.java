@@ -1,4 +1,4 @@
-package com.lorenipson.menu_service.dto;
+package com.lorenipson.menu_service.dto.create;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,13 +12,13 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPizzaDough {
+public class NewPizzaAddonSizePrice {
 
     @NotBlank
-    private String doughType;
+    private String size;
 
     @NotNull
     @PositiveOrZero
-    private BigDecimal doughExtraPrice;
+    private BigDecimal addonExtraPrice;
 
 }

@@ -1,4 +1,4 @@
-package com.lorenipson.menu_service.dto;
+package com.lorenipson.menu_service.dto.create;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,18 +7,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPizzaSizes {
+public class NewPizzaAddons {
 
     @NotBlank
-    private String size;
+    private String addonName;
 
     @NotNull
     @PositiveOrZero
-    private BigDecimal extraPrice;
+    private List<NewPizzaAddonSizePrice> addonSizePrice;
 
 }
