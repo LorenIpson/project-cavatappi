@@ -1,6 +1,8 @@
 <script setup>
-
 import {RouterLink} from "vue-router";
+import {useMemberStore} from "@/stores/memberStore.js";
+
+const memberStore = useMemberStore();
 </script>
 
 <template>
@@ -8,7 +10,8 @@ import {RouterLink} from "vue-router";
     <RouterLink to="/">首 頁</RouterLink>
     <RouterLink to="/menu">餐 點</RouterLink>
     <RouterLink to="/cart">購 物 車</RouterLink>
-    <RouterLink to="/login">登 入</RouterLink> <!-- TODO: 改為動態讀取 user 姓氏，判斷 Auth 決定連結目標-->
+    <RouterLink v-if="memberStore.isLoggedIn" to="/profile">個 人 資 訊</RouterLink> <!-- TODO: 改為動態讀取 user 權限，判斷 Auth 決定連結目標-->
+    <RouterLink v-else to="/login">登 入</RouterLink>
     <!--    <RouterLink to="/about">About</RouterLink>-->
   </nav>
 </template>
