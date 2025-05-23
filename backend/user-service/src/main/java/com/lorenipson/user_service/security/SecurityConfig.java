@@ -1,5 +1,6 @@
 package com.lorenipson.user_service.security;
 
+import com.lorenipson.user_service.service.CustomOidcUserService;
 import com.lorenipson.user_service.service.JWTService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomOidcUserService customOidcUserService;
+
+    public SecurityConfig(CustomOidcUserService customOidcUserService) {
+        this.customOidcUserService = customOidcUserService;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -28,7 +35,10 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Login(AbstractHttpConfigurer::disable) //TODO: 實作第三方登入時再開啟
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOidcUserService)))
+                //.oauth2Login(Customizer.withDefaults()) // 要記得這一個設定，忘記加上浪費了我兩個小時。
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
@@ -36,12 +46,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
+
+                        .requestMatchers("/api/user/oauth/authorization/github/**").permitAll()
+                        .requestMatchers("/oauth2/authorization/**").permitAll()
+                        .requestMatchers("/login/oauth2/**").permitAll()
+
                         .requestMatchers("/api/user/yolo/**").permitAll()
-                        // .requestMatchers("/api/user/home").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+        // TODO: .userEndpoint or GrantedAuthoritiesMapper
     }
 
     @Bean

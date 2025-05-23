@@ -88,7 +88,7 @@ public class OTPService {
         }
 
         Member targetMember = byToken.getMember();
-        targetMember.setIsEnable(true);
+        targetMember.setIsEnabled(true);
         memberRepos.save(targetMember);
 
         byToken.setIsUsed(true);

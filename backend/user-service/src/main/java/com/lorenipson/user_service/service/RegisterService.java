@@ -55,7 +55,8 @@ public class RegisterService {
         member.setBirthDate(request.getBirthDate());
         member.setPhone(request.getPhone());
         member.setAddress(request.getAddress());
-        member.setIsEnable(false);
+        member.setIsEnabled(false);
+        member.setIsComplete(true);
         member.setIsLocked(false);
         memberRepos.save(member);
 
@@ -94,7 +95,8 @@ public class RegisterService {
         if (request.getAddress() != null) {
             member.setAddress(request.getAddress());
         }
-        member.setIsEnable(false);
+        member.setIsEnabled(false);
+        member.setIsComplete(true); // TODO: 檢查
         member.setIsLocked(false);
         memberRepos.save(member);
 

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -29,10 +31,16 @@ public class MemberAuths {
     @Column(name = "provider", nullable = false)
     private String provider;
 
-    @Column(name = "provider_id", unique = true)
-    private String providerId;
+    @Column(name = "provider_user_id", unique = true)
+    private String providerUserId;
+
+    @Column(name = "token_expires_at")
+    private LocalDateTime tokenExpiresAt;
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
 }
