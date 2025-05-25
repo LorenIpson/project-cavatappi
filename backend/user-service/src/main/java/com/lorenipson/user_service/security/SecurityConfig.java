@@ -1,8 +1,7 @@
 package com.lorenipson.user_service.security;
 
 import com.lorenipson.user_service.service.CustomOidcUserService;
-import com.lorenipson.user_service.service.JWTService;
-import org.springframework.beans.factory.annotation.Value;
+import com.lorenipson.user_service.service.OAuthSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,9 +20,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomOidcUserService customOidcUserService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
 
-    public SecurityConfig(CustomOidcUserService customOidcUserService) {
+    public SecurityConfig(CustomOidcUserService customOidcUserService, OAuthSuccessHandler oAuthSuccessHandler) {
         this.customOidcUserService = customOidcUserService;
+        this.oAuthSuccessHandler = oAuthSuccessHandler;
     }
 
     @Bean
@@ -36,13 +37,20 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth2 -> oauth2
+                        // TODO: OAuth 在 Authentication 階段看起來會用到 Session，之後再修改實作 cookie 版本
+                        // .authorizationEndpoint()
+                        // .authorizationRequestRepository(this.this.cookieAuthorizationRequestRepository())
+                        // .authorizationEndpoint(auth ->
+                        // auth.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+                        .successHandler(oAuthSuccessHandler)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOidcUserService)))
                 //.oauth2Login(Customizer.withDefaults()) // 要記得這一個設定，忘記加上浪費了我兩個小時。
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
@@ -62,12 +70,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public JWTService jwtService(@Value("${jwt.secret-key}") String jwtSecretKey,
-                                 @Value("${jwt.secret-key.valid.seconds}") int validSeconds) {
-        return new JWTService(jwtSecretKey, validSeconds);
     }
 
 }

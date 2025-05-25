@@ -1,8 +1,25 @@
 <script setup>
-import {RouterLink} from "vue-router";
+import {RouterLink, useRoute} from "vue-router";
 import {useMemberStore} from "@/stores/memberStore.js";
+import {computed} from "vue";
 
 const memberStore = useMemberStore();
+const route = useRoute()
+
+const isPersonalAccountRelatePage = computed(() => {
+  return ['/login', '/register', '/profile'].includes(route.path) // location.pathname 不支援 reactive
+});
+
+const accountLinkPath = computed(() => {
+  return memberStore.isLoggedIn ? '/profile' : '/login';
+});
+
+const accountLinkText = computed(() => {
+  return memberStore.isLoggedIn ? '個 人 資 訊' : '登 入';
+});
+
+console.log("登入狀態檢查：" + memberStore.isLoggedIn);
+
 </script>
 
 <template>
@@ -10,8 +27,12 @@ const memberStore = useMemberStore();
     <RouterLink to="/">首 頁</RouterLink>
     <RouterLink to="/menu">餐 點</RouterLink>
     <RouterLink to="/cart">購 物 車</RouterLink>
-    <RouterLink v-if="memberStore.isLoggedIn" to="/profile">個 人 資 訊</RouterLink> <!-- TODO: 改為動態讀取 user 權限，判斷 Auth 決定連結目標-->
-    <RouterLink v-else to="/login">登 入</RouterLink>
+    <RouterLink
+      :to="accountLinkPath"
+      :class="{ 'router-link-active': isPersonalAccountRelatePage }"
+    >
+      {{ accountLinkText }}
+    </RouterLink>
     <!--    <RouterLink to="/about">About</RouterLink>-->
   </nav>
 </template>

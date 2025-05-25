@@ -1,25 +1,31 @@
 package com.lorenipson.user_service.service;
 
+import com.lorenipson.user_service.entity.Member;
 import com.lorenipson.user_service.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
+@Service
 public class JWTService {
 
     private final SecretKey secretKey;
     private final int validSeconds;
     private final JwtParser jwtParser;
 
-    public JWTService(String secretKeyStr, int validSeconds) {
+    public JWTService(@Value("${jwt.secret-key}") String secretKeyStr,
+                      @Value("${jwt.secret-key.valid.seconds}") int validSeconds) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyStr.getBytes());
         this.validSeconds = validSeconds;
         this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
@@ -47,6 +53,24 @@ public class JWTService {
                 .add("authorities", uImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .add("adult", uImpl.getAge() >= 18)
                 .issuer("cavatappi-user-service")
+                .build();
+
+        return Jwts.builder().claims(claims).signWith(secretKey).compact();
+
+    }
+
+    public String createLoginAccessToken(Member member, List<String> roles) {
+
+        Instant now = Instant.now();
+
+        Claims claims = Jwts
+                .claims()
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(validSeconds)))
+                .subject(member.getId().toString())
+                .add("username", member.getUsername())
+                .add("authorities", roles)
+                // 就不包裝其實用不到的 age 了
                 .build();
 
         return Jwts.builder().claims(claims).signWith(secretKey).compact();

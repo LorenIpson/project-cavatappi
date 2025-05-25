@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,29 +43,37 @@ public class CustomOidcUserService implements OAuth2UserService<OidcUserRequest,
         OidcUser oidcUser = oidcUserService.loadUser(userRequest);
         System.out.println("LOAD USER STAGE 2 ======================================================================");
 
-        String provider = userRequest.getClientRegistration().getRegistrationId(); // TODO: 檢查應該要是 Google 才對
+        String provider = userRequest.getClientRegistration().getRegistrationId();
         String subject = oidcUser.getSubject();
         String email = oidcUser.getEmail();
-        String profile = oidcUser.getGivenName();
+        String profileFirstname = Optional.ofNullable(oidcUser.getGivenName()).orElse("-");
+        String profileLastname = Optional.ofNullable(oidcUser.getFamilyName()).orElse("-");
         Instant expiresAt = userRequest.getAccessToken().getExpiresAt();
         System.out.println("LOAD USER STAGE 3 ======================================================================");
 
         memberAuthsRepos.findByProviderAndProviderUserId(provider, subject)
-                .orElseGet(() -> registerNewUser(email, provider, subject, profile, expiresAt));
+                .orElseGet(() -> registerNewUser(email, provider, subject, profileFirstname, profileLastname, expiresAt));
         System.out.println("LOAD USER STAGE 4 ======================================================================");
 
         return oidcUser;
+
     }
 
-    private MemberAuths registerNewUser(String email, String provider, String subject, String profile, Instant expiresAt) {
+    private MemberAuths registerNewUser(String email,
+                                        String provider,
+                                        String subject,
+                                        String firstname,
+                                        String lastname,
+                                        Instant expiresAt) {
 
         Member member = new Member();
         member.setEmail(email);
         // 臨時，下一頁面要讓使用者更新，更新完後 is_complete = true，且部分將不能再更新。
         member.setUsername("Google-" + UUID.randomUUID());
-        member.setFirstName(profile);
-        member.setPhone("未提供");
-        member.setAddress("未提供");
+        member.setFirstName(firstname);
+        member.setLastName(lastname);
+        member.setPhone("待更新");
+        member.setAddress("待更新");
         member.setIsEnabled(true);
         member.setIsComplete(false);
         member.setIsLocked(false);
@@ -91,6 +100,7 @@ public class CustomOidcUserService implements OAuth2UserService<OidcUserRequest,
         System.out.println("新建成功 ==============================================================================");
 
         return auth;
+
     }
 
 }

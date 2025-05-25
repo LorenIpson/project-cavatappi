@@ -6,7 +6,6 @@ import com.lorenipson.user_service.security.UserDetailsImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,14 +28,27 @@ public class LoginService {
         UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
         String jwt = jwtService.createLoginAccessToken(user);
 
-        return new LoginResponse(
-                jwt,
-                user.getUUID(), // TODO: 除錯用。
-                user.getUsername(),
-                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
-                user.getAge()
-        );
+        return new LoginResponse(jwt);
 
     }
+//
+//    @Deprecated // Stateless 無法使用
+//    public LoginResponse login(Authentication authentication) {
+//
+//        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
+//
+//        String sub = oidcUser.getSubject();
+//        String provider = "google";
+//        Member member = memberAuthsRepos.findByProviderAndProviderUserId(provider, sub).map(MemberAuths::getMemberId)
+//                .orElseThrow(EntityNotFoundException::new);
+//        List<String> roles = memberRolesRepos.findByMemberId(member).stream()
+//                .map(MemberRoles::getAuthority)
+//                .map(role -> "ROLE_" + role).toList();
+//
+//        String token = jwtService.createLoginAccessToken(member, roles);
+//
+//        return new LoginResponse(token);
+//
+//    }
 
 }

@@ -1,6 +1,7 @@
 <script setup>
 
 import LoginForm from "@/components/login-page/LoginForm.vue";
+import router from "@/router/index.js";
 // import axios from "axios";
 
 // const loginWithGitHub = async () => {
@@ -20,6 +21,10 @@ const loginWithGoogle = async () => {
   window.location.href = 'http://localhost:8080/oauth2/authorization/google';
 };
 
+const goRegistration = async () => {
+  router.push('/register');
+}
+
 </script>
 
 <template>
@@ -33,7 +38,7 @@ const loginWithGoogle = async () => {
     <button @click="loginWithGoogle">Google 登入</button>
     <!--    <button @click="loginWitLine">Line 登入</button>-->
     <!--    <button @click="loginWithGitHub">GitHub 登入</button>-->
-    <button>註冊新帳號</button>
+    <button @click="goRegistration">註冊新帳號</button>
   </div>
 </template>
 
