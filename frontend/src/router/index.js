@@ -6,6 +6,7 @@ import CartView from "@/views/CartView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import RegistrationView from "@/views/RegistrationView.vue";
 import OAuthCallbackView from "@/views/OAuthCallbackView.vue";
+import ProfileEditView from "@/views/ProfileEditView.vue";
 
 const routes = [
   {path: '/', name: 'Home', component: HomeView},
@@ -14,7 +15,8 @@ const routes = [
   {path: '/login', name: 'Login', component: LoginView},
   {path: '/register', name: 'Register', component: RegistrationView},
   {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
-  {path: '/profile', name: 'Profile', component: ProfileView}
+  {path: '/profile', name: 'Profile', component: ProfileView},
+  {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView}
 ]
 const router = createRouter({
   history: createWebHistory(),

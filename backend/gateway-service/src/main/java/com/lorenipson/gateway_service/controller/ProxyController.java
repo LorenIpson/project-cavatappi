@@ -30,7 +30,7 @@ public class ProxyController {
         System.out.println(claims.getSubject());
 
         System.out.println("USERNAME ================================================================================");
-        String username = claims.getSubject();
+        String username = claims.get("username", String.class);
         System.out.println(username);
 
         String body = restClient.get()

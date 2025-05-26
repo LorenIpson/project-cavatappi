@@ -7,7 +7,7 @@ const memberStore = useMemberStore();
 const route = useRoute()
 
 const isPersonalAccountRelatePage = computed(() => {
-  return ['/login', '/register', '/profile'].includes(route.path) // location.pathname 不支援 reactive
+  return ['/login', '/register', '/profile', '/profile/edit'].includes(route.path) // location.pathname 不支援 reactive
 });
 
 const accountLinkPath = computed(() => {

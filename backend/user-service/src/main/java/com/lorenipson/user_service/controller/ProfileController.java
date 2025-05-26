@@ -1,11 +1,15 @@
 package com.lorenipson.user_service.controller;
 
+import com.lorenipson.user_service.dto.ProfileRequest;
 import com.lorenipson.user_service.dto.ProfileResponse;
 import com.lorenipson.user_service.security.UserDetailsImpl;
 import com.lorenipson.user_service.service.ProfileService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -29,9 +33,14 @@ public class ProfileController {
 
     }
 
-    @GetMapping("/api/user/profile/me2")
-    public ResponseEntity<String> me2() {
-        return ResponseEntity.ok("me2");
+    @PutMapping("/api/user/profile/edit")
+    public ResponseEntity<?> editProfile(Authentication authentication, @Valid @RequestBody ProfileRequest request) {
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID uuid = userDetails.getUUID();
+        profileService.editProfile(uuid, request);
+        return ResponseEntity.ok().build();
+
     }
 
 }
