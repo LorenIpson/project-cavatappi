@@ -49,7 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = claims.getSubject();
+        String username = claims.get("username", String.class);
+        System.out.println("GATEWAY ============================== USERNAME: " + username);
 
         if (!jwtUtils.validateToken(jwt)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

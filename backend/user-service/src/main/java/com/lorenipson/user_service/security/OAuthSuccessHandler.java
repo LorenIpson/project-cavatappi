@@ -1,10 +1,11 @@
-package com.lorenipson.user_service.service;
+package com.lorenipson.user_service.security;
 
 import com.lorenipson.user_service.entity.Member;
 import com.lorenipson.user_service.entity.MemberAuths;
 import com.lorenipson.user_service.entity.MemberRoles;
 import com.lorenipson.user_service.repository.MemberAuthsRepository;
 import com.lorenipson.user_service.repository.MemberRolesRepository;
+import com.lorenipson.user_service.service.JWTService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

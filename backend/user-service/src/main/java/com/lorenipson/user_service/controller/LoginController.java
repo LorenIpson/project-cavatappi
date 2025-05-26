@@ -29,13 +29,6 @@ public class LoginController {
         }
     }
 
-//    @Deprecated
-//    @GetMapping("/api/user/internal/oauth/authorization/success")
-//    public ResponseEntity<LoginResponse> oAuthAuthorizeSuccess(Authentication authentication) {
-//        LoginResponse response = loginService.login(authentication);
-//        return ResponseEntity.ok(response);
-//    }
-
     @GetMapping("/api/user/home")
     public String home(@RequestHeader("X-Username") String header) {
         System.out.println("HEADER =================================================================================");

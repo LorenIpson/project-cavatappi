@@ -70,7 +70,7 @@ public class JWTService {
                 .subject(member.getId().toString())
                 .add("username", member.getUsername())
                 .add("authorities", roles)
-                // 就不包裝其實用不到的 age 了
+                .issuer("cavatappi-user-service")
                 .build();
 
         return Jwts.builder().claims(claims).signWith(secretKey).compact();
@@ -89,7 +89,7 @@ public class JWTService {
 
         try {
             Claims claims = parseToken(jwt);
-            String username = claims.getSubject();
+            String username = claims.get("username", String.class);
             Date expiration = claims.getExpiration();
             return username.equals(user.getUsername()) && expiration.after(new Date());
         } catch (JwtException e) {

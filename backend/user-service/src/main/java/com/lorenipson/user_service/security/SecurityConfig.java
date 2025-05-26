@@ -1,9 +1,9 @@
 package com.lorenipson.user_service.security;
 
 import com.lorenipson.user_service.service.CustomOidcUserService;
-import com.lorenipson.user_service.service.OAuthSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +33,44 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
     public SecurityFilterChain configure(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+        return http
+                .securityMatcher("/api/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/user/register/**").permitAll()
+                        .requestMatchers("/api/user/login/**").permitAll()
+                        .requestMatchers("/api/user/profile/**").permitAll()
+                        .anyRequest().authenticated())
+                .build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain oauth2Chain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuthSuccessHandler)
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.oidcUserService(customOidcUserService)))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .build();
+    }
+
+
+    /* 測試分兩個 filter chain 處理
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+
+        RequestCache nullRequestCache = new NullRequestCache();
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth2 -> oauth2
@@ -49,11 +86,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
-                        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .requestCache((cache) -> cache
+                        .requestCache(nullRequestCache))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
+                        .requestMatchers("/api/user/profile/**").permitAll()
 
                         .requestMatchers("/api/user/oauth/authorization/github/**").permitAll()
                         .requestMatchers("/oauth2/authorization/**").permitAll()
@@ -62,10 +101,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/yolo/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
         // TODO: .userEndpoint or GrantedAuthoritiesMapper
-    }
+    }*/
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

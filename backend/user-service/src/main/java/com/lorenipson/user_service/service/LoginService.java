@@ -31,24 +31,5 @@ public class LoginService {
         return new LoginResponse(jwt);
 
     }
-//
-//    @Deprecated // Stateless 無法使用
-//    public LoginResponse login(Authentication authentication) {
-//
-//        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
-//
-//        String sub = oidcUser.getSubject();
-//        String provider = "google";
-//        Member member = memberAuthsRepos.findByProviderAndProviderUserId(provider, sub).map(MemberAuths::getMemberId)
-//                .orElseThrow(EntityNotFoundException::new);
-//        List<String> roles = memberRolesRepos.findByMemberId(member).stream()
-//                .map(MemberRoles::getAuthority)
-//                .map(role -> "ROLE_" + role).toList();
-//
-//        String token = jwtService.createLoginAccessToken(member, roles);
-//
-//        return new LoginResponse(token);
-//
-//    }
 
 }

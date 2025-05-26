@@ -62,7 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = claims.getSubject();
+        String username = claims.get("username", String.class);
+        System.out.println("USER SERVICE ============================== USERNAME: " + username);
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         if (!jwtService.validateToken(jwt, user)) {
@@ -75,6 +76,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(token);
         filterChain.doFilter(request, response);
+
+        System.out.println("USER SERVICE ============================== SESSION ID" + request.getSession(false));
 
     }
 
