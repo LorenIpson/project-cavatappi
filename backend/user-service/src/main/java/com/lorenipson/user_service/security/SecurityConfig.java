@@ -1,9 +1,9 @@
 package com.lorenipson.user_service.security;
 
-import com.lorenipson.user_service.service.JWTService;
-import org.springframework.beans.factory.annotation.Value;
+import com.lorenipson.user_service.service.CustomOidcUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,40 +19,97 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomOidcUserService customOidcUserService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+
+    public SecurityConfig(CustomOidcUserService customOidcUserService, OAuthSuccessHandler oAuthSuccessHandler) {
+        this.customOidcUserService = customOidcUserService;
+        this.oAuthSuccessHandler = oAuthSuccessHandler;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
+    @Order(1)
     public SecurityFilterChain configure(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
+                .securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Login(AbstractHttpConfigurer::disable) //TODO: 實作第三方登入時再開啟
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
-                        .requestMatchers("/api/user/yolo/**").permitAll()
-                        // .requestMatchers("/api/user/home").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                        .requestMatchers("/api/user/profile/**").permitAll()
+                        .anyRequest().authenticated())
                 .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    @Order(2)
+    public SecurityFilterChain oauth2Chain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuthSuccessHandler)
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.oidcUserService(customOidcUserService)))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .build();
     }
 
+
+    /* 測試分兩個 filter chain 處理
     @Bean
-    public JWTService jwtService(@Value("${jwt.secret-key}") String jwtSecretKey,
-                                 @Value("${jwt.secret-key.valid.seconds}") int validSeconds) {
-        return new JWTService(jwtSecretKey, validSeconds);
+    public SecurityFilterChain configure(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+
+        RequestCache nullRequestCache = new NullRequestCache();
+
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth2 -> oauth2
+                        // TODO: OAuth 在 Authentication 階段看起來會用到 Session，之後再修改實作 cookie 版本
+                        // .authorizationEndpoint()
+                        // .authorizationRequestRepository(this.this.cookieAuthorizationRequestRepository())
+                        // .authorizationEndpoint(auth ->
+                        // auth.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+                        .successHandler(oAuthSuccessHandler)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOidcUserService)))
+                //.oauth2Login(Customizer.withDefaults()) // 要記得這一個設定，忘記加上浪費了我兩個小時。
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .requestCache((cache) -> cache
+                        .requestCache(nullRequestCache))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/user/register/**").permitAll()
+                        .requestMatchers("/api/user/login/**").permitAll()
+                        .requestMatchers("/api/user/profile/**").permitAll()
+
+                        .requestMatchers("/api/user/oauth/authorization/github/**").permitAll()
+                        .requestMatchers("/oauth2/authorization/**").permitAll()
+                        .requestMatchers("/login/oauth2/**").permitAll()
+
+                        .requestMatchers("/api/user/yolo/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+        // TODO: .userEndpoint or GrantedAuthoritiesMapper
+    }*/
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
 }

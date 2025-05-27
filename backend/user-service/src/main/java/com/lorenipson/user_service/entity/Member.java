@@ -2,7 +2,6 @@ package com.lorenipson.user_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +28,7 @@ public class Member {
     @Column(name = "seq_id", updatable = false, insertable = false, nullable = false, unique = true)
     private Long seqId;
 
-    @NotNull
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "email", unique = true)
@@ -39,22 +37,23 @@ public class Member {
     @Column(name = "first_name")
     private String firstName;
 
-    @NotNull
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @NotNull
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "is_enable", nullable = false)
-    private Boolean isEnable;
+    @Column(name = "is_enabled", nullable = false)
+    private Boolean isEnabled;
+
+    @Column(name = "is_complete", nullable = false)
+    private Boolean isComplete;
 
     @Column(name = "is_locked", nullable = false)
     private Boolean isLocked;

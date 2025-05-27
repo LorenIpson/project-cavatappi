@@ -21,19 +21,17 @@ public class RegisterService {
     private final MemberAuthsRepository memberAuthsRepos;
     private final MemberRolesRepository memberRolesRepos;
 
-    private final OTPService OTPService;
+    // private final OTPService OTPService;
 
     private final PasswordEncoder passwordEncoder;
 
     public RegisterService(MemberRepository memberRepos,
                            MemberAuthsRepository memberAuthsRepos,
                            MemberRolesRepository memberRolesRepos,
-                           OTPService OTPService,
                            PasswordEncoder passwordEncoder) {
         this.memberRepos = memberRepos;
         this.memberAuthsRepos = memberAuthsRepos;
         this.memberRolesRepos = memberRolesRepos;
-        this.OTPService = OTPService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -55,7 +53,8 @@ public class RegisterService {
         member.setBirthDate(request.getBirthDate());
         member.setPhone(request.getPhone());
         member.setAddress(request.getAddress());
-        member.setIsEnable(false);
+        member.setIsEnabled(true); // TODO: 臨時開放、待 OTP 修好。
+        member.setIsComplete(true);
         member.setIsLocked(false);
         memberRepos.save(member);
 
@@ -70,7 +69,7 @@ public class RegisterService {
         memberRoles.setAuthority("USER");
         memberRolesRepos.save(memberRoles);
 
-        OTPService.sendVerificationMail(request.getAddress(), member);
+        // OTPService.sendVerificationMail(request.getAddress(), member); TODO: OTP 壞掉了，應該是 SMTP 問題
 
     }
 
@@ -94,7 +93,8 @@ public class RegisterService {
         if (request.getAddress() != null) {
             member.setAddress(request.getAddress());
         }
-        member.setIsEnable(false);
+        member.setIsEnabled(true); // TODO: 臨時開放、待 OTP 修好。
+        member.setIsComplete(true); // TODO: 檢查
         member.setIsLocked(false);
         memberRepos.save(member);
 

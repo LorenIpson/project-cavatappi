@@ -1,9 +1,9 @@
 package com.lorenipson.user_service.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,29 +11,24 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class MemberRegisterRequest {
+@AllArgsConstructor
+public class ProfileRequest {
 
     @NotBlank
-    private String username;
-
-    @NotBlank
-    @Email
-    private String email;
-
+    @Size(max = 30)
     private String firstName;
 
     @NotBlank
+    @Size(max = 30)
     private String lastName;
-
-    @Past
-    private LocalDate birthDate;
 
     @NotBlank
     private String phone;
+
+    @Size(max = 150)
     private String address;
 
-    @NotBlank
-    @Size(min = 6)
-    private String password;
+    @Past
+    private LocalDate birthDate;
 
 }

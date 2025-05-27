@@ -3,6 +3,7 @@ package com.lorenipson.user_service.controller;
 import com.lorenipson.user_service.dto.EasyRegisterRequest;
 import com.lorenipson.user_service.dto.MemberRegisterRequest;
 import com.lorenipson.user_service.service.RegisterService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ public class RegisterController {
     }
 
     @PostMapping("/api/user/register/memberRegister")
-    public ResponseEntity<String> memberRegister(@RequestBody MemberRegisterRequest request) {
+    public ResponseEntity<String> memberRegister(@RequestBody @Valid MemberRegisterRequest request) {
         registerService.memberRegister(request);
         return ResponseEntity.ok("Registered");
     }
