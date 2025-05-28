@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class AllPizzaResponse {
 
+    private Long pizzaId;
+    private byte[] pizzaImage;
     private String pizzaName;
     private String pizzaDescription;
     private BigDecimal basePrice;

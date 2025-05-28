@@ -25,11 +25,6 @@ public class PizzaController {
         return "Pizza created";
     }
 
-    @GetMapping("/api/menu/helloShibe")
-    public String hello() {
-        return "Hello World";
-    }
-
     @GetMapping("/api/menu/pizza/get/all")
     public ResponseEntity<Page<AllPizzaResponse>> getAllPizza(@PageableDefault Pageable pageable) {
         Page<AllPizzaResponse> allPizzas = pizzaService.getAllPizzas(pageable);
