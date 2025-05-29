@@ -15,9 +15,18 @@ public class OrderStatusService {
         this.orderRepos = orderRepos;
     }
 
-    public String setOrderStatus(SetOrderStatusRequest request) {
+    public String confirmOrder(Long orderId) {
 
-        Order targetOrder = orderRepos.findById(request.getOrderId()).orElseThrow(EntityNotFoundException::new);
+        Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        targetOrder.setOrderStatus("已確認訂單");
+        orderRepos.save(targetOrder);
+        return "訂單：" + orderId + "，已確認。";
+
+    }
+
+    public String setOrderStatus(Long orderId, SetOrderStatusRequest request) {
+
+        Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
         targetOrder.setOrderStatus(request.getStatus());
         orderRepos.save(targetOrder);
         return "Order status updated";

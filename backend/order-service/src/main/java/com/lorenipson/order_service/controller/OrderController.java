@@ -9,7 +9,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @RestController
 public class OrderController {
@@ -20,9 +23,10 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/api/order/get-details/{id}")
-    public ResponseEntity<GetOrderResponse> getOrder(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(orderService.getOrder(id));
+    @GetMapping("/api/order/get/by/date")
+    public ResponseEntity<Page<GetOrderBriefResponse>> getOrderBriefByDate(@RequestParam(required = false) LocalDate date, @PageableDefault Pageable pageable) {
+        Page<GetOrderBriefResponse> response = orderService.getAllOrdersByDate(date, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/order/get/all")
@@ -30,5 +34,11 @@ public class OrderController {
         Page<GetOrderBriefResponse> response = orderService.getAllOrders(pageable);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/api/order/get/details/{id}")
+    public ResponseEntity<GetOrderResponse> getOrder(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(orderService.getOrder(id));
+    }
+
 
 }

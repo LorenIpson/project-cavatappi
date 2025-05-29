@@ -16,6 +16,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,16 +37,27 @@ public class OrderService {
         this.orderPaymentRepos = orderPaymentRepos;
     }
 
-    /* TODO: 查詢方式
-        1. 查詢所有今日要交付訂單
-    public Page<GetOrderBriefResponse> getAllOrdersByDate(Pageable pageable) {
-        return null;
+    public Page<GetOrderBriefResponse> getAllOrdersByDate(LocalDate date, Pageable pageable) {
+
+        LocalDate targetDate = (date != null) ? date : LocalDate.now();
+        LocalDateTime startOfDay = targetDate.atStartOfDay();
+        LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
+
+        Page<Order> orders = orderRepos.findAllByReceiveDateBetween(startOfDay, endOfDay, pageable);
+        List<GetOrderBriefResponse> mainResponse = toOrderBriefResponse(orders);
+        return new PageImpl<>(mainResponse, pageable, orders.getTotalElements());
+
     }
-    */
 
     public Page<GetOrderBriefResponse> getAllOrders(Pageable pageable) {
 
         Page<Order> allOrderList = orderRepos.findAll(pageable); // 取得所有ㄉ訂單
+        List<GetOrderBriefResponse> mainResponse = toOrderBriefResponse(allOrderList);
+        return new PageImpl<>(mainResponse, pageable, allOrderList.getTotalElements());
+
+    }
+
+    private List<GetOrderBriefResponse> toOrderBriefResponse(Page<Order> allOrderList) {
 
         List<GetOrderBriefResponse> mainResponse = new ArrayList<>(); // 預先準備好整個回傳的 List<>
 
@@ -79,9 +93,7 @@ public class OrderService {
 
             mainResponse.add(orderResponse);
         });
-
-        System.out.println("================================== BRUH ==================================");
-        return new PageImpl<>(mainResponse, pageable, allOrderList.getTotalElements());
+        return mainResponse;
 
     }
 

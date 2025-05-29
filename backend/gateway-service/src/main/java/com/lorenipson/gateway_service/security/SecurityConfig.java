@@ -40,7 +40,10 @@ public class SecurityConfig {
                         // order-service
                         .requestMatchers("/api/order/payment/**").permitAll()
                         .requestMatchers("/api/order/get/**").permitAll()
-                        .requestMatchers("/api/order/get-details/**").permitAll()
+
+                        // order-service-status
+                        .requestMatchers("/api/order/*/confirm/**").permitAll()
+                        .requestMatchers("/api/order/*/status/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
