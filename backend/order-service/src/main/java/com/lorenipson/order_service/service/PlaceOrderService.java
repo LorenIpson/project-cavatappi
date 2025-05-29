@@ -18,8 +18,7 @@ import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PlaceOrderService {
@@ -68,20 +67,39 @@ public class PlaceOrderService {
         newOrder.setReceiveDate(request.getReceiveDate());
         newOrder.setIsEdited(false);
         newOrder.setEditedAt(null);
-        newOrder.setOrderStatus("PENDING"); // TODO: 新增店家確認訂單、製作中、已完成
-        newOrder.setPaymentStatus("PENDING"); // TODO: 新增未付款、已付款、取餐付款
+        newOrder.setOrderStatus("訂單待確認"); // TODO: 新增店家確認訂單、製作中、已完成製作、已結單
+        newOrder.setPaymentStatus("訂單待確認"); // TODO: 新增線上未付款、已付款、取餐付款
         newOrder.setTotalPrice(totalPrice);
         orderRepos.save(newOrder);
 
+        // 以下是將從 menu-service 拿到的 snapshot 寫入資料庫的步驟。
         for (ItemSnapshotResponse item : itemDetails) {
             OrderDetail newDetail = new OrderDetail();
             newDetail.setOrder(newOrder);
             newDetail.setItemId(item.getItemId());
             newDetail.setItemName(item.getItemName());
-            // TODO: 設定 itemSpecs 和 itemAddons，JSON 格式
-            newDetail.setItemSpecs(null);
-            newDetail.setItemAddons(null);
             newDetail.setItemBasePrice(item.getBasePrice());
+
+            // 存豆和尺寸
+            Map<String, Object> newItemSpecs = new HashMap<>();
+            newItemSpecs.put("sizeId", item.getSize().getSizeId());
+            newItemSpecs.put("size", item.getSize().getSize());
+            newItemSpecs.put("sizeExtraPrice", item.getSize().getExtraPrice());
+            newItemSpecs.put("doughId", item.getDough().getDoughId());
+            newItemSpecs.put("doughType", item.getDough().getDoughType());
+            newItemSpecs.put("doughExtraPrice", item.getDough().getExtraPrice());
+            newDetail.setItemSpecs(newItemSpecs);
+
+            List<Map<String, Object>> newItemAddonList = new ArrayList<>();
+            item.getAddons().forEach(addon -> {
+                Map<String, Object> addonSpecs = new HashMap<>();
+                addonSpecs.put("addonId", addon.getId());
+                addonSpecs.put("name", addon.getName());
+                addonSpecs.put("addonExtraPrice", addon.getExtraPrice());
+                newItemAddonList.add(addonSpecs);
+            });
+            newDetail.setItemAddons(newItemAddonList);
+
             orderDetailsRepos.save(newDetail);
         }
 

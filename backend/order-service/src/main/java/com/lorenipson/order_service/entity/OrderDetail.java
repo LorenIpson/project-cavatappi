@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -40,7 +41,7 @@ public class OrderDetail {
 
     @Column(name = "item_addons")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> itemAddons;
+    private List<Map<String, Object>> itemAddons;
 
     @NotNull
     @Column(name = "item_base_price", nullable = false, precision = 10, scale = 2)

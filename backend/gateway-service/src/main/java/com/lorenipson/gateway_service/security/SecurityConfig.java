@@ -23,17 +23,24 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // user-service
                         .requestMatchers("/api/user/login/**").permitAll()
                         .requestMatchers("/api/user/register/**").permitAll()
                         .requestMatchers("/api/user/profile/**").permitAll()
 
+                        // user-service-oauth
                         .requestMatchers("/api/user/oauth/authorization/github/**").permitAll()
                         .requestMatchers("/oauth2/authorization/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
 
-                        .requestMatchers("/api/menu/helloShibe").permitAll()
+                        // menu-service
                         .requestMatchers("/api/menu/pizza/create/**").permitAll()
                         .requestMatchers("/proxy/api/**").permitAll()
+
+                        // order-service
+                        .requestMatchers("/api/order/payment/**").permitAll()
+                        .requestMatchers("/api/order/get/**").permitAll()
+                        .requestMatchers("/api/order/get-details/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,0 +1,127 @@
+package com.lorenipson.order_service.service;
+
+import com.lorenipson.order_service.dto.response.get.GetOrderBriefResponse;
+import com.lorenipson.order_service.dto.response.get.GetOrderItemsBriefResponse;
+import com.lorenipson.order_service.dto.response.get.GetOrderItemsResponse;
+import com.lorenipson.order_service.dto.response.get.GetOrderResponse;
+import com.lorenipson.order_service.entity.Order;
+import com.lorenipson.order_service.entity.OrderDetail;
+import com.lorenipson.order_service.entity.OrderPayment;
+import com.lorenipson.order_service.repository.OrderDetailsRepository;
+import com.lorenipson.order_service.repository.OrderPaymentRepository;
+import com.lorenipson.order_service.repository.OrderRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class OrderService {
+
+    private final OrderRepository orderRepos;
+    private final OrderDetailsRepository orderDetailsRepos;
+    private final OrderPaymentRepository orderPaymentRepos;
+
+    public OrderService(OrderRepository orderRepos, OrderDetailsRepository orderDetailsRepos, OrderPaymentRepository orderPaymentRepos) {
+        this.orderRepos = orderRepos;
+        this.orderDetailsRepos = orderDetailsRepos;
+        this.orderPaymentRepos = orderPaymentRepos;
+    }
+
+    /* TODO: 查詢方式
+        1. 查詢所有今日要交付訂單
+    public Page<GetOrderBriefResponse> getAllOrdersByDate(Pageable pageable) {
+        return null;
+    }
+    */
+
+    public Page<GetOrderBriefResponse> getAllOrders(Pageable pageable) {
+
+        Page<Order> allOrderList = orderRepos.findAll(pageable); // 取得所有ㄉ訂單
+
+        List<GetOrderBriefResponse> mainResponse = new ArrayList<>(); // 預先準備好整個回傳的 List<>
+
+        allOrderList.forEach(order -> { // for each 一筆筆 order 分別處理
+            GetOrderBriefResponse orderResponse = new GetOrderBriefResponse(); // 一筆 order
+
+            orderResponse.setOrderId(order.getId());
+            orderResponse.setBuyerName(order.getBuyerName());
+            orderResponse.setBuyerMessage(order.getBuyerMessage());
+            orderResponse.setOrderedDate(order.getOrderedDate());
+            orderResponse.setReceiveDate(order.getReceiveDate());
+            orderResponse.setEdited(order.getIsEdited());
+            orderResponse.setOrderStatus(order.getOrderStatus());
+            orderResponse.setPaymentStatus(order.getPaymentStatus());
+            orderResponse.setTotalPrice(order.getTotalPrice());
+
+            List<GetOrderItemsBriefResponse> itemList = new ArrayList<>(); // 一筆 order 會有很多 item
+            List<OrderDetail> byOrder = orderDetailsRepos.findByOrder(order); // TODO: 大概會有 N+1 問題
+            byOrder.forEach(orderDetail -> {
+                GetOrderItemsBriefResponse item = new GetOrderItemsBriefResponse();
+
+                item.setItemName(orderDetail.getItemName());
+
+                Map<String, Object> originItemSpecs = orderDetail.getItemSpecs(); // 重新組裝 jsonb 內的資料
+                Map<String, Object> responseItemSpecs = new HashMap<>();
+                responseItemSpecs.put("size", originItemSpecs.get("size"));
+                responseItemSpecs.put("doughType", originItemSpecs.get("doughType"));
+                item.setItemSpecs(responseItemSpecs);
+
+                itemList.add(item);
+            });
+            orderResponse.setItems(itemList);
+
+            mainResponse.add(orderResponse);
+        });
+
+        System.out.println("================================== BRUH ==================================");
+        return new PageImpl<>(mainResponse, pageable, allOrderList.getTotalElements());
+
+    }
+
+    public GetOrderResponse getOrder(Long orderId) {
+
+        Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        List<OrderDetail> targetOrderItems = orderDetailsRepos.findByOrder(targetOrder);
+        OrderPayment targetOrderPayment = orderPaymentRepos.findByOrder(targetOrder)
+                .orElseThrow(EntityNotFoundException::new);
+
+        GetOrderResponse mainResponse = new GetOrderResponse();
+
+        mainResponse.setOrderId(targetOrder.getId());
+        mainResponse.setUserId(targetOrder.getMemberId());
+        mainResponse.setBuyerName(targetOrder.getBuyerName());
+        mainResponse.setBuyerPhone(targetOrder.getBuyerPhone());
+        mainResponse.setBuyerMessage(targetOrder.getBuyerMessage());
+        mainResponse.setOrderedDate(targetOrder.getOrderedDate());
+        mainResponse.setReceiveDate(targetOrder.getReceiveDate());
+        mainResponse.setEdited(targetOrder.getIsEdited());
+        mainResponse.setEditedAt(targetOrder.getEditedAt());
+        mainResponse.setOrderStatus(targetOrder.getOrderStatus());
+        mainResponse.setPaymentStatus(targetOrder.getPaymentStatus());
+        mainResponse.setTotalPrice(targetOrder.getTotalPrice());
+        mainResponse.setPaymentMethod(targetOrderPayment.getPaymentMethod());
+
+        List<GetOrderItemsResponse> mainResponseItems = new ArrayList<>();
+        targetOrderItems.forEach(orderItem -> {
+            GetOrderItemsResponse orderItems = new GetOrderItemsResponse();
+            orderItems.setItemId(orderItem.getItemId());
+            orderItems.setItemName(orderItem.getItemName());
+            orderItems.setItemBasePrice(orderItem.getItemBasePrice());
+            orderItems.setItemSpecs(orderItem.getItemSpecs());
+            orderItems.setItemAddons(orderItem.getItemAddons());
+            mainResponseItems.add(orderItems);
+        });
+        mainResponse.setItems(mainResponseItems);
+
+        return mainResponse;
+
+    }
+
+}
