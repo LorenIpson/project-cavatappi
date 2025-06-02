@@ -24,13 +24,16 @@ public class OrderPayment {
     private Order order;
 
     @NotNull
-    @Column(name = "payment_method", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
 
-    @Column(name = "transaction_id", length = Integer.MAX_VALUE)
+    @Column(name = "transaction_id")
     private String transactionId;
 
-    @Column(name = "provider", length = Integer.MAX_VALUE)
+    @Column(name = "redirect_url")
+    private String redirectUrl;
+
+    @Column(name = "provider")
     private String provider;
 
     @Column(name = "payment_time")
