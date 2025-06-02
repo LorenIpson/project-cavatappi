@@ -1,4 +1,4 @@
-package com.lorenipson.order_service.dto.form;
+package com.lorenipson.order_service.dto.form.linepay;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinePayForm {
+public class LinePayReqForm {
 
     private Long orderId;
     private String currency;

@@ -1,9 +1,9 @@
 package com.lorenipson.order_service.service;
 
-import com.lorenipson.order_service.dto.form.LinePayForm;
-import com.lorenipson.order_service.dto.form.LinePayPackage;
-import com.lorenipson.order_service.dto.form.LinePayProduct;
-import com.lorenipson.order_service.dto.form.LinePayResponse;
+import com.lorenipson.order_service.dto.form.linepay.LinePayReqForm;
+import com.lorenipson.order_service.dto.form.linepay.LinePayPackage;
+import com.lorenipson.order_service.dto.form.linepay.LinePayProduct;
+import com.lorenipson.order_service.dto.form.linepay.LinePayReqResponse;
 import com.lorenipson.order_service.dto.internal.InternalItemRequest;
 import com.lorenipson.order_service.dto.request.PlaceOrderRequest;
 import com.lorenipson.order_service.dto.response.AddonResponse;
@@ -67,7 +67,7 @@ public class PlaceOrderService {
         Order newOrder = createNewOrder(memberId, username, request, totalPrice, itemDetails);
         System.out.println("====== NEW ORDER ==================");
 
-        LinePayForm linePayForm = createLinePayForm(newOrder, itemDetails);
+        LinePayReqForm linePayForm = createLinePayForm(newOrder, itemDetails);
         System.out.println("====== NEW ORDER FORM ==================");
 
         String redirectURL = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
@@ -175,12 +175,12 @@ public class PlaceOrderService {
     /**
      * 包裝 LINE Pay Request Body。
      */
-    private LinePayForm createLinePayForm(Order order, List<ItemSnapshotResponse> itemDetails) {
+    private LinePayReqForm createLinePayForm(Order order, List<ItemSnapshotResponse> itemDetails) {
 
-        String confirmRedirectURL = frontendURL + "/cart/payment/line-pay/confirm";
+        String confirmRedirectURL = frontendURL + "/cart/payment/line-pay/confirm?orderId=" + order.getId();
         String cancelRedirectURL = frontendURL + "/cart/payment/line-pay/cancel";
 
-        LinePayForm form = new LinePayForm();
+        LinePayReqForm form = new LinePayReqForm();
 
         form.setOrderId(order.getId());
         form.setAmount(order.getTotalPrice().intValue());
@@ -246,7 +246,7 @@ public class PlaceOrderService {
      * 建立訂單 new OrderPayment 的邏輯，而不是實際付款的程序。<br>
      * 回傳為 Redirect URL。
      */
-    private String createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayForm form) {
+    private String createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayReqForm form) {
 
         OrderPayment newPayment = new OrderPayment();
         String response;
@@ -264,12 +264,12 @@ public class PlaceOrderService {
             case "LINE_PAY" -> {
                 newPayment.setPaymentMethod("LINE_PAY");
                 newPayment.setProvider("LINE");
-                LinePayResponse linePayResponse = linePayService.requestOnlinePay(form);
-
-                newPayment.setTransactionId(linePayResponse.getTransactionId());
+                LinePayReqResponse linePayReqResponse = linePayService.requestOnlinePay(form);
+                newPayment.setTransactionId(linePayReqResponse.getTransactionId());
+                newPayment.setRedirectUrl(linePayReqResponse.getWebUrl());
                 newPayment.setPaymentTime(null);
                 order.setPaymentStatus("Line Pay 付款預約中");
-                response = linePayResponse.getWebUrl();
+                response = linePayReqResponse.getWebUrl();
             }
             case "PAYPAL_PAY" -> {
                 newPayment.setPaymentMethod("PAYPAL_PAY");

@@ -7,7 +7,10 @@ import ProfileView from "@/views/ProfileView.vue";
 import RegistrationView from "@/views/RegistrationView.vue";
 import OAuthCallbackView from "@/views/OAuthCallbackView.vue";
 import ProfileEditView from "@/views/ProfileEditView.vue";
-import PaymentResultView from "@/views/PaymentResultView.vue";
+import LinePayConfirmView from "@/views/linepay/LinePayConfirmView.vue";
+import LinePaySuccessView from "@/views/linepay/LinePaySuccessView.vue";
+import LinePayCancelView from "@/views/linepay/LinePayCancelView.vue";
+import CheckoutView from "@/views/checkout/CheckoutView.vue";
 
 const routes = [
   {path: '/', name: 'Home', component: HomeView},
@@ -18,9 +21,14 @@ const routes = [
   {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
   {path: '/profile', name: 'Profile', component: ProfileView},
   {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView},
-  {path: '/cart/payment/confirm', name: 'Payment-Confirm', component: PaymentResultView},
-  {path: '/cart/payment/cancel', name: 'Payment-Cancel', component: PaymentResultView},
-  {path: '/cart/payment/error', name: 'Payment-Error', component: PaymentResultView}
+
+  // LINE PAY
+  {path: '/cart/payment/line-pay/confirm', name: 'Line-pay-Confirm', component: LinePayConfirmView},
+  {path: '/cart/payment/line-pay/success', name: 'Line-pay-Success', component: LinePaySuccessView},
+  {path: '/cart/payment/line-pay/cancel', name: 'Line-pay-Cancel', component: LinePayCancelView},
+
+  // TEMP
+  {path: '/temp/checkout', name: 'TEMP-Checkout', component: CheckoutView},
 
 ]
 const router = createRouter({

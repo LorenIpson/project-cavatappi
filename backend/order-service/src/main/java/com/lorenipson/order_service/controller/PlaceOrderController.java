@@ -29,10 +29,4 @@ public class PlaceOrderController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/api/order/payment/confirm")
-    public ResponseEntity<String> confirmOrder() {
-
-        return null;
-    }
-
 }
