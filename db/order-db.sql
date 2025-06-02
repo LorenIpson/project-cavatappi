@@ -33,6 +33,7 @@ create table order_payment
     id             bigint references "order" (id) primary key,
     payment_method text           not null,
     transaction_id text,
+    redirect_url   text,
     provider       text,
     payment_time   timestamp,
     total_price    decimal(10, 2) not null
