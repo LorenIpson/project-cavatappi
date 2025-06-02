@@ -1,4 +1,4 @@
-package com.lorenipson.order_service.service;
+package com.lorenipson.order_service.service.payment.impl;
 
 import com.lorenipson.order_service.entity.Order;
 import com.lorenipson.order_service.entity.OrderPayment;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class PaymentService {
+public class CashPayService {
 
     private final OrderRepository orderRepos;
     private final OrderPaymentRepository orderPaymentRepos;
 
-    public PaymentService(OrderRepository orderRepos,
+    public CashPayService(OrderRepository orderRepos,
                           OrderPaymentRepository orderPaymentRepos) {
         this.orderRepos = orderRepos;
         this.orderPaymentRepos = orderPaymentRepos;

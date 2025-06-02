@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 public class AddonRequest {
 
     private Long addonId;
-//    private String addonName;
 
 }

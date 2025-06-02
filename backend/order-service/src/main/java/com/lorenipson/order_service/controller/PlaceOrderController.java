@@ -20,13 +20,19 @@ public class PlaceOrderController {
 
     /**
      * 前端按下購物車中的送出訂單時，會呼叫這一個 API。<br>
+     * Payment: Request。
      */
-    @PostMapping("/api/order/placeNewOrder")
+    @PostMapping("/api/order/place-new-order")
     public ResponseEntity<String> placeOrder(@RequestBody PlaceOrderRequest request) {
         // TODO: RequestHeader "X-Username"
-        placeOrderService.placeOrder(UUID.randomUUID(), "yolo420", request);
-        return ResponseEntity.ok("Order placed successfully");
-        // TODO: 下一步要進入付款頁面
+        String response = placeOrderService.placeOrder(UUID.randomUUID(), "yolo420", request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/order/payment/confirm")
+    public ResponseEntity<String> confirmOrder() {
+
+        return null;
     }
 
 }

@@ -1,5 +1,9 @@
 package com.lorenipson.order_service.service;
 
+import com.lorenipson.order_service.dto.form.LinePayForm;
+import com.lorenipson.order_service.dto.form.LinePayPackage;
+import com.lorenipson.order_service.dto.form.LinePayProduct;
+import com.lorenipson.order_service.dto.form.LinePayResponse;
 import com.lorenipson.order_service.dto.internal.InternalItemRequest;
 import com.lorenipson.order_service.dto.request.PlaceOrderRequest;
 import com.lorenipson.order_service.dto.response.AddonResponse;
@@ -10,7 +14,9 @@ import com.lorenipson.order_service.entity.OrderPayment;
 import com.lorenipson.order_service.repository.OrderDetailsRepository;
 import com.lorenipson.order_service.repository.OrderPaymentRepository;
 import com.lorenipson.order_service.repository.OrderRepository;
+import com.lorenipson.order_service.service.payment.impl.LinePayService;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -19,24 +25,35 @@ import org.springframework.web.client.RestClient;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaceOrderService {
+
+    @Value("${frontend.url}")
+    private String frontendURL;
+
+    @Value("${backend.menu.service.url}")
+    private String backendMenuServiceURL;
 
     private final OrderRepository orderRepos;
     private final OrderDetailsRepository orderDetailsRepos;
     private final OrderPaymentRepository orderPaymentRepos;
 
+    private final LinePayService linePayService;
+
     public PlaceOrderService(OrderRepository orderRepos,
                              OrderDetailsRepository orderDetailsRepos,
-                             OrderPaymentRepository orderPaymentRepos) {
+                             OrderPaymentRepository orderPaymentRepos,
+                             LinePayService linePayService) {
         this.orderRepos = orderRepos;
         this.orderDetailsRepos = orderDetailsRepos;
         this.orderPaymentRepos = orderPaymentRepos;
+        this.linePayService = linePayService;
     }
 
     @Transactional
-    public void placeOrder(UUID memberId, String username, PlaceOrderRequest request) {
+    public String placeOrder(UUID memberId, String username, PlaceOrderRequest request) {
 
         List<InternalItemRequest> items = request.getItems();
         System.out.println("====== ITEMS ==================");
@@ -50,12 +67,60 @@ public class PlaceOrderService {
         Order newOrder = createNewOrder(memberId, username, request, totalPrice, itemDetails);
         System.out.println("====== NEW ORDER ==================");
 
-        createPayment(newOrder, request.getPaymentMethod(), totalPrice);
+        LinePayForm linePayForm = createLinePayForm(newOrder, itemDetails);
+        System.out.println("====== NEW ORDER FORM ==================");
+
+        String redirectURL = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
         System.out.println("====== NEW ORDER PAYMENT ==================");
+
+        return redirectURL;
 
     }
 
-    private Order createNewOrder(UUID memberId, String username, PlaceOrderRequest request, BigDecimal totalPrice, List<ItemSnapshotResponse> itemDetails) {
+    /**
+     * 呼叫 menu-service，取得餐點資訊 snapshots。
+     */
+    private List<ItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
+        return RestClient.create().post()
+                .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot") // TODO: Hardcoded
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requests)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+    }
+
+    /**
+     * 計算總價。
+     */
+    private BigDecimal calculateTotalPrice(List<ItemSnapshotResponse> items) {
+        return items.stream().map(this::calculateItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal calculateItemPrice(ItemSnapshotResponse item) {
+
+        BigDecimal basePrice = item.getBasePrice();
+        BigDecimal doughPrice = item.getDough().getExtraPrice();
+        BigDecimal sizePrice = item.getSize().getExtraPrice();
+        BigDecimal addOnsPrice = item.getAddons() != null
+                ? item.getAddons()
+                .stream()
+                .map(AddonResponse::getExtraPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                : BigDecimal.ZERO;
+
+        return basePrice.add(doughPrice).add(sizePrice).add(addOnsPrice);
+
+    }
+
+    /**
+     * 建立訂單。<br>
+     */
+    private Order createNewOrder(UUID memberId,
+                                 String username,
+                                 PlaceOrderRequest request,
+                                 BigDecimal totalPrice,
+                                 List<ItemSnapshotResponse> itemDetails) {
 
         Order newOrder = new Order();
         newOrder.setMemberId(memberId);
@@ -67,8 +132,8 @@ public class PlaceOrderService {
         newOrder.setReceiveDate(request.getReceiveDate());
         newOrder.setIsEdited(false);
         newOrder.setEditedAt(null);
-        newOrder.setOrderStatus("訂單待確認"); // TODO: 新增店家確認訂單、製作中、已完成製作、已結單
-        newOrder.setPaymentStatus("訂單待確認"); // TODO: 新增線上未付款、已付款、取餐付款
+        newOrder.setOrderStatus("訂單待確認");
+        newOrder.setPaymentStatus("付款待確認");
         newOrder.setTotalPrice(totalPrice);
         orderRepos.save(newOrder);
 
@@ -107,61 +172,121 @@ public class PlaceOrderService {
 
     }
 
-    private List<ItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
+    /**
+     * 包裝 LINE Pay Request Body。
+     */
+    private LinePayForm createLinePayForm(Order order, List<ItemSnapshotResponse> itemDetails) {
 
-        return RestClient.create().post()
-                .uri("http://localhost:8082/api/menu/internal/getItemSnapshot") // TODO: Hardcoded
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(requests)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
+        String confirmRedirectURL = frontendURL + "/cart/payment/line-pay/confirm";
+        String cancelRedirectURL = frontendURL + "/cart/payment/line-pay/cancel";
+
+        LinePayForm form = new LinePayForm();
+
+        form.setOrderId(order.getId());
+        form.setAmount(order.getTotalPrice().intValue());
+        form.setCurrency("TWD");
+        Map<String, String> redirectUrls = new HashMap<>();
+        redirectUrls.put("confirmUrl", confirmRedirectURL);
+        redirectUrls.put("cancelUrl", cancelRedirectURL);
+        form.setRedirectUrls(redirectUrls);
+
+        // products
+        List<LinePayProduct> products = new ArrayList<>();
+        itemDetails.forEach(item -> {
+            LinePayProduct product = new LinePayProduct();
+
+            // Prices
+            BigDecimal addOnsPrice = item.getAddons() != null
+                    ? item.getAddons()
+                    .stream()
+                    .map(AddonResponse::getExtraPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    : BigDecimal.ZERO;
+            BigDecimal doughPrice = item.getDough().getExtraPrice();
+            BigDecimal sizePrice = item.getSize().getExtraPrice();
+
+            // Names
+            String addOns = item.getAddons() != null
+                    ? item.getAddons()
+                    .stream()
+                    .map(AddonResponse::getName)
+                    .collect(Collectors.joining(", "))
+                    : "";
+            product.setName(item.getItemName()
+                            + " / "
+                            + item.getSize().getSize()
+                            + " / "
+                            + item.getDough().getDoughType()
+                            + " / "
+                            + addOns
+            );
+
+            product.setQuantity(1);
+            product.setPrice(item.getBasePrice().add(addOnsPrice).add(doughPrice).add(sizePrice).intValue());
+            products.add(product);
+
+        });
+
+        // packages
+        List<LinePayPackage> packages = new ArrayList<>();
+        LinePayPackage aPackage = new LinePayPackage();
+        aPackage.setId("order-" + order.getId());
+        aPackage.setName("Package");
+        aPackage.setAmount(order.getTotalPrice().intValue());
+        aPackage.setProducts(products);
+        packages.add(aPackage);
+
+        form.setPackages(packages);
+
+        return form;
 
     }
 
-    private BigDecimal calculateTotalPrice(List<ItemSnapshotResponse> responseBody) {
+    /**
+     * 建立訂單 new OrderPayment 的邏輯，而不是實際付款的程序。<br>
+     * 回傳為 Redirect URL。
+     */
+    private String createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayForm form) {
 
-        BigDecimal totalPrice = BigDecimal.valueOf(0.0);
-        for (ItemSnapshotResponse item : responseBody) {
-            totalPrice = totalPrice.add(item.getBasePrice());
-            totalPrice = totalPrice.add(item.getDough().getExtraPrice());
-            for (AddonResponse addon : item.getAddons()) {
-                totalPrice = totalPrice.add(addon.getExtraPrice());
-            }
-        }
-        return totalPrice;
-
-    }
-
-    private void createPayment(Order order, String paymentMethod, BigDecimal amount) {
-
-        // TODO: 建立訂單 new OrderPayment 的邏輯，而不是實際付款的程序
-
-        if (paymentMethod == null) {
-            return;
-        }
         OrderPayment newPayment = new OrderPayment();
+        String response;
         newPayment.setOrder(order);
+
         switch (paymentMethod) {
             case "CASH_PAY" -> {
                 newPayment.setPaymentMethod("CASH_PAY");
                 newPayment.setProvider("LOCAL");
                 newPayment.setPaymentTime(null);
+                newPayment.setTransactionId(null);
+                order.setPaymentStatus("待取餐付款");
+                response = frontendURL + "/api/cart/payment/confirm"; // 頁面顯示：已送出訂單。
             }
             case "LINE_PAY" -> {
                 newPayment.setPaymentMethod("LINE_PAY");
                 newPayment.setProvider("LINE");
+                LinePayResponse linePayResponse = linePayService.requestOnlinePay(form);
+
+                newPayment.setTransactionId(linePayResponse.getTransactionId());
                 newPayment.setPaymentTime(null);
+                order.setPaymentStatus("Line Pay 付款預約中");
+                response = linePayResponse.getWebUrl();
             }
             case "PAYPAL_PAY" -> {
                 newPayment.setPaymentMethod("PAYPAL_PAY");
                 newPayment.setProvider("PAYPAL");
+                newPayment.setTransactionId(null);
                 newPayment.setPaymentTime(null);
+                order.setPaymentStatus("付款成功");
+                response = "PAYPAL_";
             }
+            default -> response = frontendURL + "/api/cart/payment/error"; // 頁面顯示：訂單錯誤。
         }
-        newPayment.setTransactionId(null);
+
         newPayment.setTotalPrice(amount);
         orderPaymentRepos.save(newPayment);
+        orderRepos.save(order);
+
+        return response;
 
     }
 

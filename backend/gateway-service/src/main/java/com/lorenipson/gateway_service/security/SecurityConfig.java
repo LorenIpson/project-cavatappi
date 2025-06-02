@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/proxy/api/**").permitAll()
 
                         // order-service
+                        .requestMatchers("/api/order/place-new-order/**").permitAll()
                         .requestMatchers("/api/order/payment/**").permitAll()
                         .requestMatchers("/api/order/get/**").permitAll()
 

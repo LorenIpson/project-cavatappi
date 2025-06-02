@@ -7,6 +7,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import RegistrationView from "@/views/RegistrationView.vue";
 import OAuthCallbackView from "@/views/OAuthCallbackView.vue";
 import ProfileEditView from "@/views/ProfileEditView.vue";
+import PaymentResultView from "@/views/PaymentResultView.vue";
 
 const routes = [
   {path: '/', name: 'Home', component: HomeView},
@@ -16,7 +17,11 @@ const routes = [
   {path: '/register', name: 'Register', component: RegistrationView},
   {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
   {path: '/profile', name: 'Profile', component: ProfileView},
-  {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView}
+  {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView},
+  {path: '/cart/payment/confirm', name: 'Payment-Confirm', component: PaymentResultView},
+  {path: '/cart/payment/cancel', name: 'Payment-Cancel', component: PaymentResultView},
+  {path: '/cart/payment/error', name: 'Payment-Error', component: PaymentResultView}
+
 ]
 const router = createRouter({
   history: createWebHistory(),
