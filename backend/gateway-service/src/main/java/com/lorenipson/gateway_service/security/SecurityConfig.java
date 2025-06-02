@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/login/oauth2/**").permitAll()
 
                         // menu-service
+                        .requestMatchers("/api/menu/pizza/get/**").permitAll()
                         .requestMatchers("/api/menu/pizza/create/**").permitAll()
                         .requestMatchers("/proxy/api/**").permitAll()
 

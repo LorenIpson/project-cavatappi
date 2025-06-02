@@ -1,12 +1,13 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import LoginView from "@/views/LoginView.vue";
-import MenuView from "@/views/MenuView.vue";
-import CartView from "@/views/CartView.vue";
-import ProfileView from "@/views/ProfileView.vue";
-import RegistrationView from "@/views/RegistrationView.vue";
-import OAuthCallbackView from "@/views/OAuthCallbackView.vue";
-import ProfileEditView from "@/views/ProfileEditView.vue";
+import HomeView from '../views/home/HomeView.vue'
+import LoginView from "@/views/user/LoginView.vue";
+import MenuView from "@/views/menu/MenuView.vue";
+import CartView from "@/views/cart/CartView.vue";
+import ProfileView from "@/views/user/ProfileView.vue";
+import RegistrationView from "@/views/user/RegistrationView.vue";
+import OAuthCallbackView from "@/views/user/OAuthCallbackView.vue";
+import ProfileEditView from "@/views/user/ProfileEditView.vue";
+import MenuEditView from "@/views/menu/admin/MenuEditView.vue";
 import LinePayConfirmView from "@/views/linepay/LinePayConfirmView.vue";
 import LinePaySuccessView from "@/views/linepay/LinePaySuccessView.vue";
 import LinePayCancelView from "@/views/linepay/LinePayCancelView.vue";
@@ -29,6 +30,9 @@ const routes = [
 
   // TEMP
   {path: '/temp/checkout', name: 'TEMP-Checkout', component: CheckoutView},
+
+  // ========= admin role required =========
+  {path: '/menu/admin/edit', name: 'Admin-Menu-Edit', component: MenuEditView}
 
 ]
 const router = createRouter({

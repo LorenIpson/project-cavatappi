@@ -151,6 +151,8 @@ public class PizzaService {
 
         Page<Pizza> allPizzas = pizzaRepos.findAll(pageable);
         return allPizzas.map(allPizza -> new AllPizzaResponse(
+                        allPizza.getId(),
+                        allPizza.getImage(),
                         allPizza.getName(),
                         allPizza.getDescription(),
                         allPizza.getBasePrice(),
