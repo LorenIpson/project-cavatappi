@@ -7,7 +7,7 @@ import {useToast} from "@/composables/useToast.js";
 
 const router = useRouter();
 const memberStore = useMemberStore();
-const { resultMessage, resultType, showToast } = useToast();
+const {resultMessage, resultType, showToast} = useToast();
 
 const username = ref('');
 const password = ref('');
@@ -39,7 +39,7 @@ async function handleLogin() {
     showToast("登入成功", "success");
     setTimeout(() => {
       router.push("/");
-    }, 1000);
+    }, 600);
   } catch (e) {
     showToast("帳號或密碼錯誤", "error");
   }

@@ -1,4 +1,5 @@
 @import "tailwindcss";
 @plugin "daisyui" {
+    /*noinspection CssUnknownProperty*/
     themes: cupcake --default, cyberpunk --prefersdark
 }

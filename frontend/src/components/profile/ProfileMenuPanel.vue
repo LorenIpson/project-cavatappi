@@ -1,11 +1,28 @@
 <script setup>
 
+import {useMemberStore} from "@/stores/memberStore.js";
+import {useToast} from "@/composables/useToast.js";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+const memberStore = useMemberStore();
+
+const {resultMessage, resultType, showToast} = useToast();
+
+const handleLogout = () => {
+  memberStore.logout();
+  showToast("登出成功", "success");
+  setTimeout(() => {
+    router.push("/profile/login");
+  }, 1000);
+}
+
 </script>
 
 <template>
   <ul class="menu bg-base-200 rounded-box w-full">
     <li>
-      <a>
+      <a class="text-base">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5"
@@ -28,7 +45,7 @@
       </a>
     </li>
     <li>
-      <a>
+      <a class="text-base">
         <svg class="h-5 w-5" stroke-width="1.5" viewBox="0 0 24 24" fill="none"
              xmlns="http://www.w3.org/2000/svg" color="#000000">
           <path
@@ -48,7 +65,7 @@
       </a>
     </li>
     <li>
-      <a>
+      <a class="text-base">
         <svg class="h-5 w-5" viewBox="0 0 24 24" stroke-width="1.5" fill="none"
              xmlns="http://www.w3.org/2000/svg" color="#000000">
           <path
@@ -59,8 +76,8 @@
         編輯個人資訊
       </a>
     </li>
-    <li>
-      <a>
+    <li @click="handleLogout">
+      <a class="text-base">
         <svg class="h-5 w-5" stroke-width="1.5" viewBox="0 0 24 24" fill="none"
              xmlns="http://www.w3.org/2000/svg" color="#000000">
           <path d="M12 12H19M19 12L16 15M19 12L16 9" stroke="#000000" stroke-width="1.5"
@@ -74,4 +91,20 @@
       </a>
     </li>
   </ul>
+
+  <transition
+    enter-active-class="transition-opacity duration-300"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
+    leave-active-class="transition-opacity duration-500"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div class="toast toast-center pb-20" v-if="resultMessage">
+      <div :class="['alert', resultType === 'success' ? 'alert-success' : 'alert-error']">
+        <span>{{ resultMessage }}</span>
+      </div>
+    </div>
+  </transition>
+
 </template>
