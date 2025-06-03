@@ -1,7 +1,8 @@
 <script setup>
 
+import CarouselPanel from "@/components/home/CarouselPanel.vue";
 </script>
 
 <template>
-  <h3>Home</h3>
+  <CarouselPanel/>
 </template>
