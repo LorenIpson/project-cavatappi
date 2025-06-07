@@ -111,6 +111,7 @@ public class PizzaService {
         response.setAvailable(targetPizza.getIsAvailable());
         response.setDoughs(targetPizza.getPizzaDoughs().stream().map(dough -> {
             SinglePizzaDoughs singlePizzaDoughs = new SinglePizzaDoughs();
+            singlePizzaDoughs.setDoughId(dough.getId());
             singlePizzaDoughs.setDoughType(dough.getDough());
             singlePizzaDoughs.setDoughExtraPrice(dough.getExtraPrice());
             singlePizzaDoughs.setInStock(dough.getIsStocked());
@@ -119,6 +120,7 @@ public class PizzaService {
         }).toList());
         response.setSizes(targetPizza.getPizzaSizes().stream().map(size -> {
             SinglePizzaSizes singlePizzaSizes = new SinglePizzaSizes();
+            singlePizzaSizes.setSizeId(size.getId());
             singlePizzaSizes.setSize(size.getSize());
             singlePizzaSizes.setExtraPrice(size.getExtraPrice());
             singlePizzaSizes.setInStock(size.getIsStocked());
@@ -128,9 +130,11 @@ public class PizzaService {
         response.setAddons(targetPizza.getPizzaAddons().stream().map(addon -> {
             SinglePizzaAddons singlePizzaAddons = new SinglePizzaAddons();
             singlePizzaAddons.setAddonName(addon.getName());
+            singlePizzaAddons.setAddonId(addon.getId());
             singlePizzaAddons.setAddonSizePrice(
                     addon.getPizzaAddonSizePrices().stream().map(addonSize -> {
                         SinglePizzaAddonSizePrice addonSizePrice = new SinglePizzaAddonSizePrice();
+                        // addonSizePrice.setAddonId(addonSize.getId());
                         addonSizePrice.setSize(addonSize.getSize());
                         addonSizePrice.setAddonExtraPrice(addonSize.getExtraPrice());
                         addonSizePrice.setInStock(addonSize.getIsStocked());

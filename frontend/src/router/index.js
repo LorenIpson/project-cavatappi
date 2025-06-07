@@ -1,8 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
-import LoginView from "@/views/profile/LoginView.vue";
+import MenuView from "@/views/menu/MenuView.vue";
+import CartView from "@/views/cart/CartView.vue";
+import CheckoutView from "@/views/cart/checkout/CheckoutView.vue";
 import ProfileView from "@/views/profile/ProfileView.vue";
-import RegisterView from "@/views/profile/RegisterView.vue";
+import LoginView from "@/views/profile/login/LoginView.vue";
+import RegisterView from "@/views/profile/register/RegisterView.vue";
 import OAuthCallbackView from "@/views/profile/OAuthCallbackView.vue";
 
 const routes = [
@@ -11,8 +14,12 @@ const routes = [
   {path: '/', name: 'Home', component: HomeView},
 
   // MENU
+  {path: '/menu', name: 'Menu', component: MenuView},
 
   // CART
+  {path: '/cart', name: 'Cart', component: CartView},
+  {path: '/cart/checkout', name: 'Checkout', component: CheckoutView},
+
 
   // PROFILE
   {path: '/profile', name: 'Profile', component: ProfileView},

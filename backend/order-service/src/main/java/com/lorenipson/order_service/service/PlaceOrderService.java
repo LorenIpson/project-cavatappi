@@ -82,7 +82,7 @@ public class PlaceOrderService {
      */
     private List<ItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
         return RestClient.create().post()
-                .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot") // TODO: Hardcoded
+                .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requests)
                 .retrieve()

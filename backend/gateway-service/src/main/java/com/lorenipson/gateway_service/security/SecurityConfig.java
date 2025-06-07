@@ -43,6 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/order/payment/confirm/**").permitAll()
                         .requestMatchers("/api/order/get/**").permitAll()
 
+                        // order-service-cart
+                        .requestMatchers("/api/order/cart/preview/**").permitAll()
+
                         // order-service-status
                         .requestMatchers("/api/order/*/confirm/**").permitAll()
                         .requestMatchers("/api/order/*/status/**").permitAll()
