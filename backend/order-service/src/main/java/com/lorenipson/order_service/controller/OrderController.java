@@ -23,22 +23,21 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/api/order/get/by/date")
+    @GetMapping("/api/order/master/get/by/date")
     public ResponseEntity<Page<GetOrderBriefResponse>> getOrderBriefByDate(@RequestParam(required = false) LocalDate date, @PageableDefault Pageable pageable) {
         Page<GetOrderBriefResponse> response = orderService.getAllOrdersByDate(date, pageable);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/order/get/all")
+    @GetMapping("/api/order/master/get/all")
     public ResponseEntity<Page<GetOrderBriefResponse>> getAllOrders(@PageableDefault Pageable pageable) {
         Page<GetOrderBriefResponse> response = orderService.getAllOrders(pageable);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/order/get/details/{id}")
+    @GetMapping("/api/order/master/get/details/{id}")
     public ResponseEntity<GetOrderResponse> getOrder(@PathVariable("id") Long id) {
         return ResponseEntity.ok(orderService.getOrder(id));
     }
-
 
 }

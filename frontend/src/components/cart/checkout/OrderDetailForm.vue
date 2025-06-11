@@ -5,8 +5,8 @@ import {ref} from "vue";
 import {useCartStore} from "@/stores/cartStore.js";
 import ToastAlert from "@/components/essential/ToastAlert.vue";
 import {useToast} from "@/composables/useToast.js";
-import axios from "axios";
 import router from "@/router/index.js";
+import axiosApi from '@/composables/useAxios';
 
 const props = defineProps(["totalPrice"]);
 const price = props.totalPrice;
@@ -56,7 +56,7 @@ const handleSubmitOrder = async () => {
   console.log(orderRequestBody);
 
   try {
-    const response = await axios.post('http://localhost:8080/api/order/place-new-order', orderRequestBody);
+    const response = await axiosApi.post('/api/order/place-new-order', orderRequestBody);
     if (!response.data.success) {
       showToast("訂單送出失敗", "error")
       return;
