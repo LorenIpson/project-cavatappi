@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SinglePizzaAddons {
 
+    private Long addonId;
     private String addonName;
     private boolean isInStock;
     private boolean isAvailable;

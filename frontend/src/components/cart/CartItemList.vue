@@ -1,0 +1,88 @@
+<script setup>
+
+import {computed, onMounted, ref} from "vue";
+import axios from "axios";
+import CartItemCard from "@/components/cart/CartItemCard.vue";
+import ToastAlert from "@/components/essential/ToastAlert.vue";
+import {useToast} from "@/composables/useToast.js";
+import router from "@/router/index.js";
+import {useCartStore} from "@/stores/cartStore.js";
+
+const {showToast} = useToast();
+
+const cartStore = useCartStore();
+const cartLocalItems = cartStore.items;
+const cartItemList = ref(null);
+
+const calculateTotalPrice = computed(() => {
+  if (!cartItemList.value) return 0;
+
+  return cartItemList.value.reduce((total, item) => {
+    const base = item.basePrice || 0;
+    const size = item.size?.extraPrice || 0;
+    const dough = item.dough?.extraPrice || 0;
+    const addons = item.addons?.reduce((sum, addon) => sum + (addon.extraPrice || 0), 0) || 0;
+    return total + base + size + dough + addons;
+  }, 0);
+});
+
+// TODO: 如購物車是空的，不開放跳轉。
+const goToCheckout = () => {
+  router.push({
+    path: '/cart/checkout',
+    state: {
+      totalPrice: calculateTotalPrice.value
+    }
+  });
+};
+
+const handleRemoveItem = (itemSeqId, itemName) => {
+  console.log('Handle remove item 觸發');
+  console.log(itemSeqId);
+  cartStore.removeItem(itemSeqId);
+  cartItemList.value = cartItemList.value.filter(item => item.itemSeqId !== itemSeqId);
+  showToast('成功移除 ' + itemName,'success')
+};
+
+onMounted(async () => {
+  try {
+    const response = await axios.post("http://localhost:8080/api/order/cart/preview", cartLocalItems);
+    cartItemList.value = response.data.map((item, index) => {
+      const localItem = cartLocalItems[index];
+      return {
+        ...item,
+        itemSeqId: localItem.itemSeqId
+      };
+    });
+  } catch (e) {
+    showToast("取得購物車資訊時出錯了", "error");
+    console.error(e);
+  }
+});
+
+</script>
+
+<template>
+
+  <CartItemCard
+    v-for="item in cartItemList"
+    :key="item.itemSeqId"
+    :item="item"
+    @remove-item="handleRemoveItem"
+  />
+
+  <div class="p-4 bg-base-100 rounded-2xl shadow-md">
+    <div class="flex justify-between pb-2">
+      <div class="pl-14">總價</div>
+      <div class="pr-14">{{ calculateTotalPrice }}</div>
+    </div>
+    <div class="flex justify-center">
+      <button @click="goToCheckout" class="btn btn-wide btn-primary w-full max-w-2xl mt-1">
+        結帳
+      </button>
+    </div>
+  </div>
+
+  <ToastAlert/>
+
+</template>

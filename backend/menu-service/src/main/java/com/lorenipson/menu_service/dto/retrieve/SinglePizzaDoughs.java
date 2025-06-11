@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class SinglePizzaDoughs {
 
+    private Long doughId;
     private String doughType;
     private BigDecimal doughExtraPrice;
     private boolean isInStock;

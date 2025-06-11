@@ -1,16 +1,10 @@
 <script setup>
 
-import ItemList from "@/components/menu-page/ItemList.vue";
-
+import MenuItemList from "@/components/menu/MenuItemList.vue";
 </script>
 
 <template>
 
-  <h1>這裡是菜單耶</h1>
-  <ItemList></ItemList>
+  <MenuItemList/>
 
 </template>
-
-<style scoped>
-
-</style>

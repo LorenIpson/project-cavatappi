@@ -1,48 +1,23 @@
 <script setup>
-import {RouterLink, RouterView} from 'vue-router'
-import HeaderNav from "@/components/HeaderNav.vue";
-import BottomNav from "@/components/BottomNav.vue";
+import {RouterView} from 'vue-router'
+import DockPanel from "@/components/essential/DockPanel.vue";
+import TopPanel from "@/components/essential/TopPanel.vue";
 </script>
 
 <template>
-  <div class="app-container">
-    <HeaderNav></HeaderNav>
-    <main class="main-content">
-      <RouterView/>
-    </main>
-    <BottomNav class="bottom-nav-fixed"></BottomNav>
+
+  <div>
+    <TopPanel/>
   </div>
+
+  <div class="min-h-screen bg-base-100 px-4 sm:px-6 md:px-8">
+    <main class="max-w-screen-md mx-auto w-full py-6">
+      <RouterView/>
+      <div class="h-20"></div>
+    </main>
+  </div>
+  <div>
+    <DockPanel/>
+  </div>
+
 </template>
-
-<style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-.bottom-nav-fixed {
-  position: fixed;
-  bottom: 3%;
-  left: 7%;
-  right: 7%;
-  height: 60px;
-  border-radius: 99px;
-  background-color: #79ad6f;
-  box-shadow: 0 -0 20px #94dd98;
-  z-index: 10;
-}
-
-</style>

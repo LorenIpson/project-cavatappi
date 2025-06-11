@@ -1,11 +1,9 @@
 <script setup>
-
+import CartItemList from "@/components/cart/CartItemList.vue";
 </script>
 
 <template>
-  <h1>這裡是購物車耶</h1>
+
+  <CartItemList/>
+
 </template>
-
-<style scoped>
-
-</style>

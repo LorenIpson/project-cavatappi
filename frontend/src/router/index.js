@@ -1,40 +1,45 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomeView from '../views/home/HomeView.vue'
-import LoginView from "@/views/user/LoginView.vue";
+import HomeView from "@/views/HomeView.vue";
 import MenuView from "@/views/menu/MenuView.vue";
 import CartView from "@/views/cart/CartView.vue";
-import ProfileView from "@/views/user/ProfileView.vue";
-import RegistrationView from "@/views/user/RegistrationView.vue";
-import OAuthCallbackView from "@/views/user/OAuthCallbackView.vue";
-import ProfileEditView from "@/views/user/ProfileEditView.vue";
-import MenuEditView from "@/views/menu/admin/MenuEditView.vue";
-import LinePayConfirmView from "@/views/linepay/LinePayConfirmView.vue";
-import LinePaySuccessView from "@/views/linepay/LinePaySuccessView.vue";
-import LinePayCancelView from "@/views/linepay/LinePayCancelView.vue";
-import CheckoutView from "@/views/checkout/CheckoutView.vue";
+import CheckoutView from "@/views/cart/checkout/CheckoutView.vue";
+import PaymentSuccessView from "@/views/cart/payment/PaymentSuccessView.vue";
+import PaymentFailedView from "@/views/cart/payment/PaymentFailedView.vue";
+import LinePayConfirmView from "@/views/cart/payment/linepay/LinePayConfirmView.vue";
+import LinePayCancelView from "@/views/cart/payment/linepay/LinePayCancelView.vue";
+import ProfileView from "@/views/profile/ProfileView.vue";
+import LoginView from "@/views/profile/login/LoginView.vue";
+import RegisterView from "@/views/profile/register/RegisterView.vue";
+import OAuthCallbackView from "@/views/profile/OAuthCallbackView.vue";
 
 const routes = [
+
+  // HOME
   {path: '/', name: 'Home', component: HomeView},
+
+  // MENU
   {path: '/menu', name: 'Menu', component: MenuView},
+
+  // CART
   {path: '/cart', name: 'Cart', component: CartView},
-  {path: '/login', name: 'Login', component: LoginView},
-  {path: '/register', name: 'Register', component: RegistrationView},
-  {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
+  {path: '/cart/checkout', name: 'Checkout', component: CheckoutView},
+
+  // PAYMENT
+  {path: '/cart/payment/success', name: 'Payment-Success', component: PaymentSuccessView},
+  {path: '/cart/payment/error', name: 'Payment-Error', component: PaymentFailedView},
+
+  // PAYMENT - LINE PAY
+  {path: '/cart/payment/line-pay/confirm', name: 'Line-Pay-Confirm', component: LinePayConfirmView},
+  {path: '/cart/payment/line-pay/confirm', name: 'Line-Pay-Cancel', component: LinePayCancelView},
+
+  // PROFILE
   {path: '/profile', name: 'Profile', component: ProfileView},
-  {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView},
-
-  // LINE PAY
-  {path: '/cart/payment/line-pay/confirm', name: 'Line-pay-Confirm', component: LinePayConfirmView},
-  {path: '/cart/payment/line-pay/success', name: 'Line-pay-Success', component: LinePaySuccessView},
-  {path: '/cart/payment/line-pay/cancel', name: 'Line-pay-Cancel', component: LinePayCancelView},
-
-  // TEMP
-  {path: '/temp/checkout', name: 'TEMP-Checkout', component: CheckoutView},
-
-  // ========= admin role required =========
-  {path: '/menu/admin/edit', name: 'Admin-Menu-Edit', component: MenuEditView}
+  {path: '/profile/login', name: 'Login', component: LoginView},
+  {path: '/profile/register', name: 'Registration', component: RegisterView},
+  {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView}
 
 ]
+
 const router = createRouter({
   history: createWebHistory(),
   routes

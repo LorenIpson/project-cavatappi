@@ -8,6 +8,7 @@ import com.lorenipson.order_service.dto.internal.InternalItemRequest;
 import com.lorenipson.order_service.dto.request.PlaceOrderRequest;
 import com.lorenipson.order_service.dto.response.AddonResponse;
 import com.lorenipson.order_service.dto.response.ItemSnapshotResponse;
+import com.lorenipson.order_service.dto.response.PlaceOrderResponse;
 import com.lorenipson.order_service.entity.Order;
 import com.lorenipson.order_service.entity.OrderDetail;
 import com.lorenipson.order_service.entity.OrderPayment;
@@ -53,12 +54,12 @@ public class PlaceOrderService {
     }
 
     @Transactional
-    public String placeOrder(UUID memberId, String username, PlaceOrderRequest request) {
+    public PlaceOrderResponse placeOrder(UUID memberId, String username, PlaceOrderRequest request) {
 
         List<InternalItemRequest> items = request.getItems();
         System.out.println("====== ITEMS ==================");
 
-        List<ItemSnapshotResponse> itemDetails = getItemDetails(items); // 會呼叫 menu-service 8082
+        List<ItemSnapshotResponse> itemDetails = getItemDetails(items);
         System.out.println("====== GET ITEMS ==================");
 
         BigDecimal totalPrice = calculateTotalPrice(itemDetails);
@@ -67,13 +68,13 @@ public class PlaceOrderService {
         Order newOrder = createNewOrder(memberId, username, request, totalPrice, itemDetails);
         System.out.println("====== NEW ORDER ==================");
 
-        LinePayReqForm linePayForm = createLinePayForm(newOrder, itemDetails);
+        LinePayReqForm linePayForm = createLinePayForm(newOrder, itemDetails); // TODO: 移動到 createPayment 判斷後再執行
         System.out.println("====== NEW ORDER FORM ==================");
 
-        String redirectURL = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
+        PlaceOrderResponse response = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
         System.out.println("====== NEW ORDER PAYMENT ==================");
 
-        return redirectURL;
+        return response;
 
     }
 
@@ -82,7 +83,7 @@ public class PlaceOrderService {
      */
     private List<ItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
         return RestClient.create().post()
-                .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot") // TODO: Hardcoded
+                .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requests)
                 .retrieve()
@@ -246,10 +247,10 @@ public class PlaceOrderService {
      * 建立訂單 new OrderPayment 的邏輯，而不是實際付款的程序。<br>
      * 回傳為 Redirect URL。
      */
-    private String createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayReqForm form) {
+    private PlaceOrderResponse createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayReqForm form) {
 
         OrderPayment newPayment = new OrderPayment();
-        String response;
+        PlaceOrderResponse response = new PlaceOrderResponse();
         newPayment.setOrder(order);
 
         switch (paymentMethod) {
@@ -259,7 +260,9 @@ public class PlaceOrderService {
                 newPayment.setPaymentTime(null);
                 newPayment.setTransactionId(null);
                 order.setPaymentStatus("待取餐付款");
-                response = frontendURL + "/api/cart/payment/confirm"; // 頁面顯示：已送出訂單。
+                response.setSuccess(true);
+                response.setExternal(false);
+                response.setRedirectURL("/cart/payment/success");
             }
             case "LINE_PAY" -> {
                 newPayment.setPaymentMethod("LINE_PAY");
@@ -269,7 +272,9 @@ public class PlaceOrderService {
                 newPayment.setRedirectUrl(linePayReqResponse.getWebUrl());
                 newPayment.setPaymentTime(null);
                 order.setPaymentStatus("Line Pay 付款預約中");
-                response = linePayReqResponse.getWebUrl();
+                response.setSuccess(true);
+                response.setExternal(true);
+                response.setRedirectURL(linePayReqResponse.getWebUrl());
             }
             case "PAYPAL_PAY" -> {
                 newPayment.setPaymentMethod("PAYPAL_PAY");
@@ -277,9 +282,15 @@ public class PlaceOrderService {
                 newPayment.setTransactionId(null);
                 newPayment.setPaymentTime(null);
                 order.setPaymentStatus("付款成功");
-                response = "PAYPAL_";
+                response.setSuccess(true);
+                response.setExternal(true);
+                response.setRedirectURL("/cart/payment/error");
             }
-            default -> response = frontendURL + "/api/cart/payment/error"; // 頁面顯示：訂單錯誤。
+            default -> {
+                response.setSuccess(false);
+                response.setExternal(false);
+                response.setRedirectURL("/cart/payment/error");
+            }
         }
 
         newPayment.setTotalPrice(amount);
