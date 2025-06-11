@@ -1,6 +1,7 @@
 package com.lorenipson.order_service.controller;
 
 import com.lorenipson.order_service.dto.request.PlaceOrderRequest;
+import com.lorenipson.order_service.dto.response.PlaceOrderResponse;
 import com.lorenipson.order_service.service.PlaceOrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,9 @@ public class PlaceOrderController {
      * Payment: Request。
      */
     @PostMapping("/api/order/place-new-order")
-    public ResponseEntity<String> placeOrder(@RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<PlaceOrderResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
         // TODO: RequestHeader "X-Username"
-        String response = placeOrderService.placeOrder(UUID.randomUUID(), "yolo420", request);
+        PlaceOrderResponse response = placeOrderService.placeOrder(UUID.randomUUID(), "yolo420", request);
         return ResponseEntity.ok(response);
     }
 

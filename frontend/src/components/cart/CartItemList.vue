@@ -22,13 +22,18 @@ const calculateTotalPrice = computed(() => {
     const size = item.size?.extraPrice || 0;
     const dough = item.dough?.extraPrice || 0;
     const addons = item.addons?.reduce((sum, addon) => sum + (addon.extraPrice || 0), 0) || 0;
-
     return total + base + size + dough + addons;
   }, 0);
 });
 
+// TODO: 如購物車是空的，不開放跳轉。
 const goToCheckout = () => {
-  router.push('/cart/checkout');
+  router.push({
+    path: '/cart/checkout',
+    state: {
+      totalPrice: calculateTotalPrice.value
+    }
+  });
 };
 
 const handleRemoveItem = (itemSeqId, itemName) => {
