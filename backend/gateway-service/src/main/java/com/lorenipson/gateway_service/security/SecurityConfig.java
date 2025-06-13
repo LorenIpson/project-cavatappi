@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                         // order-service
                         .requestMatchers("/api/order/place-new-order/**").permitAll()
-                        .requestMatchers("/api/order/payment/confirm/**").permitAll()
+                        .requestMatchers("/api/order/payment/line-pay/confirm/**").permitAll()
                         .requestMatchers("/api/order/get/**").permitAll()
 
                         // order-service-cart

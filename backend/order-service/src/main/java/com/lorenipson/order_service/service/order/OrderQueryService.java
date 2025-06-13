@@ -1,9 +1,9 @@
-package com.lorenipson.order_service.service;
+package com.lorenipson.order_service.service.order;
 
-import com.lorenipson.order_service.dto.response.get.GetOrderBriefResponse;
-import com.lorenipson.order_service.dto.response.get.GetOrderItemsBriefResponse;
-import com.lorenipson.order_service.dto.response.get.GetOrderItemsResponse;
-import com.lorenipson.order_service.dto.response.get.GetOrderResponse;
+import com.lorenipson.order_service.dto.response.OrderPreviewResponse;
+import com.lorenipson.order_service.dto.response.OrderPreviewItemResponse;
+import com.lorenipson.order_service.dto.response.OrderDetailItemResponse;
+import com.lorenipson.order_service.dto.response.OrderDetailResponse;
 import com.lorenipson.order_service.entity.Order;
 import com.lorenipson.order_service.entity.OrderDetail;
 import com.lorenipson.order_service.entity.OrderPayment;
@@ -25,44 +25,44 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class OrderService {
+public class OrderQueryService {
 
     private final OrderRepository orderRepos;
     private final OrderDetailsRepository orderDetailsRepos;
     private final OrderPaymentRepository orderPaymentRepos;
 
-    public OrderService(OrderRepository orderRepos, OrderDetailsRepository orderDetailsRepos, OrderPaymentRepository orderPaymentRepos) {
+    public OrderQueryService(OrderRepository orderRepos, OrderDetailsRepository orderDetailsRepos, OrderPaymentRepository orderPaymentRepos) {
         this.orderRepos = orderRepos;
         this.orderDetailsRepos = orderDetailsRepos;
         this.orderPaymentRepos = orderPaymentRepos;
     }
 
-    public Page<GetOrderBriefResponse> getAllOrdersByDate(LocalDate date, Pageable pageable) {
+    public Page<OrderPreviewResponse> getAllOrdersByDate(LocalDate date, Pageable pageable) {
 
         LocalDate targetDate = (date != null) ? date : LocalDate.now();
         LocalDateTime startOfDay = targetDate.atStartOfDay();
         LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
 
         Page<Order> orders = orderRepos.findAllByReceiveDateBetween(startOfDay, endOfDay, pageable);
-        List<GetOrderBriefResponse> mainResponse = toOrderBriefResponse(orders);
+        List<OrderPreviewResponse> mainResponse = toOrderBriefResponse(orders);
         return new PageImpl<>(mainResponse, pageable, orders.getTotalElements());
 
     }
 
-    public Page<GetOrderBriefResponse> getAllOrders(Pageable pageable) {
+    public Page<OrderPreviewResponse> getAllOrders(Pageable pageable) {
 
         Page<Order> allOrderList = orderRepos.findAll(pageable); // 取得所有ㄉ訂單
-        List<GetOrderBriefResponse> mainResponse = toOrderBriefResponse(allOrderList);
+        List<OrderPreviewResponse> mainResponse = toOrderBriefResponse(allOrderList);
         return new PageImpl<>(mainResponse, pageable, allOrderList.getTotalElements());
 
     }
 
-    private List<GetOrderBriefResponse> toOrderBriefResponse(Page<Order> allOrderList) {
+    private List<OrderPreviewResponse> toOrderBriefResponse(Page<Order> allOrderList) {
 
-        List<GetOrderBriefResponse> mainResponse = new ArrayList<>(); // 預先準備好整個回傳的 List<>
+        List<OrderPreviewResponse> mainResponse = new ArrayList<>(); // 預先準備好整個回傳的 List<>
 
         allOrderList.forEach(order -> { // for each 一筆筆 order 分別處理
-            GetOrderBriefResponse orderResponse = new GetOrderBriefResponse(); // 一筆 order
+            OrderPreviewResponse orderResponse = new OrderPreviewResponse(); // 一筆 order
 
             orderResponse.setOrderId(order.getId());
             orderResponse.setBuyerName(order.getBuyerName());
@@ -74,10 +74,10 @@ public class OrderService {
             orderResponse.setPaymentStatus(order.getPaymentStatus());
             orderResponse.setTotalPrice(order.getTotalPrice());
 
-            List<GetOrderItemsBriefResponse> itemList = new ArrayList<>(); // 一筆 order 會有很多 item
+            List<OrderPreviewItemResponse> itemList = new ArrayList<>(); // 一筆 order 會有很多 item
             List<OrderDetail> byOrder = orderDetailsRepos.findByOrder(order); // TODO: 大概會有 N+1 問題
             byOrder.forEach(orderDetail -> {
-                GetOrderItemsBriefResponse item = new GetOrderItemsBriefResponse();
+                OrderPreviewItemResponse item = new OrderPreviewItemResponse();
 
                 item.setItemName(orderDetail.getItemName());
 
@@ -97,14 +97,14 @@ public class OrderService {
 
     }
 
-    public GetOrderResponse getOrder(Long orderId) {
+    public OrderDetailResponse getOrder(Long orderId) {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
         List<OrderDetail> targetOrderItems = orderDetailsRepos.findByOrder(targetOrder);
         OrderPayment targetOrderPayment = orderPaymentRepos.findByOrder(targetOrder)
                 .orElseThrow(EntityNotFoundException::new);
 
-        GetOrderResponse mainResponse = new GetOrderResponse();
+        OrderDetailResponse mainResponse = new OrderDetailResponse();
 
         mainResponse.setOrderId(targetOrder.getId());
         mainResponse.setUserId(targetOrder.getMemberId());
@@ -120,9 +120,9 @@ public class OrderService {
         mainResponse.setTotalPrice(targetOrder.getTotalPrice());
         mainResponse.setPaymentMethod(targetOrderPayment.getPaymentMethod());
 
-        List<GetOrderItemsResponse> mainResponseItems = new ArrayList<>();
+        List<OrderDetailItemResponse> mainResponseItems = new ArrayList<>();
         targetOrderItems.forEach(orderItem -> {
-            GetOrderItemsResponse orderItems = new GetOrderItemsResponse();
+            OrderDetailItemResponse orderItems = new OrderDetailItemResponse();
             orderItems.setItemId(orderItem.getItemId());
             orderItems.setItemName(orderItem.getItemName());
             orderItems.setItemBasePrice(orderItem.getItemBasePrice());

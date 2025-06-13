@@ -1,11 +1,14 @@
-package com.lorenipson.order_service.service;
+package com.lorenipson.order_service.service.order;
 
-import com.lorenipson.order_service.dto.request.SetOrderStatusRequest;
+import com.lorenipson.order_service.dto.request.OrderStatusRequest;
 import com.lorenipson.order_service.entity.Order;
 import com.lorenipson.order_service.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * 管理員操作訂單狀態更新時使用的服務。
+ */
 @Service
 public class OrderStatusService {
 
@@ -24,7 +27,7 @@ public class OrderStatusService {
 
     }
 
-    public String setOrderStatus(Long orderId, SetOrderStatusRequest request) {
+    public String setOrderStatus(Long orderId, OrderStatusRequest request) {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
         targetOrder.setOrderStatus(request.getStatus());

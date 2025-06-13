@@ -57,8 +57,18 @@ public class Order {
     private LocalDateTime editedAt;
 
     @NotNull
+    @ColumnDefault("false")
+    @Column(name = "is_completed", nullable = false)
+    private Boolean isCompleted = false;
+
+    @NotNull
     @Column(name = "order_status", nullable = false, length = Integer.MAX_VALUE)
     private String orderStatus;
+
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "is_paid", nullable = false)
+    private Boolean isPaid = false;
 
     @NotNull
     @Column(name = "payment_status", nullable = false, length = Integer.MAX_VALUE)

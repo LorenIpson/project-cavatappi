@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceOrderResponse {
+public class OrderPlacementResponse {
 
     private boolean success;
     private boolean external;
