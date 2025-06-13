@@ -1,4 +1,4 @@
-package com.lorenipson.order_service.dto.response;
+package com.lorenipson.order_service.dto.internal;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddonResponse {
+public class AddOnDetailResponse {
 
     private Long id;
     private String name;

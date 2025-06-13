@@ -1,4 +1,4 @@
-package com.lorenipson.order_service.dto.response.get;
+package com.lorenipson.order_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,12 +9,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 顯示於管理者的所有訂單頁面用回傳內容。
+ * 餐廳管理者所有訂單頁面的顯示項目。<br>
+ * 同時用於餐廳內場的白單。
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetOrderBriefResponse {
+public class OrderPreviewResponse {
 
     private Long orderId;
     private String buyerName;
@@ -26,6 +27,6 @@ public class GetOrderBriefResponse {
     private String paymentStatus;
     private BigDecimal totalPrice;
 
-    private List<GetOrderItemsBriefResponse> items;
+    private List<OrderPreviewItemResponse> items;
 
 }

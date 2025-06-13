@@ -1,4 +1,4 @@
-package com.lorenipson.order_service.dto.response.get;
+package com.lorenipson.order_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-
 /**
  * 回傳詳細細節用的包裝。<br>
  * 前端點擊單一 Order ID 該要得到的資訊。
@@ -17,7 +16,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetOrderResponse {
+public class OrderDetailResponse {
 
     private Long orderId;
     private UUID userId;
@@ -33,6 +32,6 @@ public class GetOrderResponse {
     private BigDecimal totalPrice;
     private String paymentMethod;
 
-    private List<GetOrderItemsResponse> items;
+    private List<OrderDetailItemResponse> items;
 
 }

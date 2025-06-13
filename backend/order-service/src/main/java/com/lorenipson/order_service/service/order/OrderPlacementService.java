@@ -1,14 +1,14 @@
-package com.lorenipson.order_service.service;
+package com.lorenipson.order_service.service.order;
 
 import com.lorenipson.order_service.dto.form.linepay.LinePayReqForm;
 import com.lorenipson.order_service.dto.form.linepay.LinePayPackage;
 import com.lorenipson.order_service.dto.form.linepay.LinePayProduct;
 import com.lorenipson.order_service.dto.form.linepay.LinePayReqResponse;
 import com.lorenipson.order_service.dto.internal.InternalItemRequest;
-import com.lorenipson.order_service.dto.request.PlaceOrderRequest;
-import com.lorenipson.order_service.dto.response.AddonResponse;
-import com.lorenipson.order_service.dto.response.ItemSnapshotResponse;
-import com.lorenipson.order_service.dto.response.PlaceOrderResponse;
+import com.lorenipson.order_service.dto.request.OrderPlacementRequest;
+import com.lorenipson.order_service.dto.internal.AddOnDetailResponse;
+import com.lorenipson.order_service.dto.internal.InternalItemSnapshotResponse;
+import com.lorenipson.order_service.dto.response.OrderPlacementResponse;
 import com.lorenipson.order_service.entity.Order;
 import com.lorenipson.order_service.entity.OrderDetail;
 import com.lorenipson.order_service.entity.OrderPayment;
@@ -28,8 +28,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 使用者下單功能的主要邏輯。
+ */
 @Service
-public class PlaceOrderService {
+public class OrderPlacementService {
 
     @Value("${frontend.url}")
     private String frontendURL;
@@ -43,10 +46,10 @@ public class PlaceOrderService {
 
     private final LinePayService linePayService;
 
-    public PlaceOrderService(OrderRepository orderRepos,
-                             OrderDetailsRepository orderDetailsRepos,
-                             OrderPaymentRepository orderPaymentRepos,
-                             LinePayService linePayService) {
+    public OrderPlacementService(OrderRepository orderRepos,
+                                 OrderDetailsRepository orderDetailsRepos,
+                                 OrderPaymentRepository orderPaymentRepos,
+                                 LinePayService linePayService) {
         this.orderRepos = orderRepos;
         this.orderDetailsRepos = orderDetailsRepos;
         this.orderPaymentRepos = orderPaymentRepos;
@@ -54,12 +57,12 @@ public class PlaceOrderService {
     }
 
     @Transactional
-    public PlaceOrderResponse placeOrder(UUID memberId, String username, PlaceOrderRequest request) {
+    public OrderPlacementResponse placeOrder(UUID memberId, String username, OrderPlacementRequest request) {
 
         List<InternalItemRequest> items = request.getItems();
         System.out.println("====== ITEMS ==================");
 
-        List<ItemSnapshotResponse> itemDetails = getItemDetails(items);
+        List<InternalItemSnapshotResponse> itemDetails = getItemDetails(items);
         System.out.println("====== GET ITEMS ==================");
 
         BigDecimal totalPrice = calculateTotalPrice(itemDetails);
@@ -71,7 +74,7 @@ public class PlaceOrderService {
         LinePayReqForm linePayForm = createLinePayForm(newOrder, itemDetails); // TODO: 移動到 createPayment 判斷後再執行
         System.out.println("====== NEW ORDER FORM ==================");
 
-        PlaceOrderResponse response = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
+        OrderPlacementResponse response = createPayment(newOrder, request.getPaymentMethod(), totalPrice, linePayForm);
         System.out.println("====== NEW ORDER PAYMENT ==================");
 
         return response;
@@ -81,7 +84,7 @@ public class PlaceOrderService {
     /**
      * 呼叫 menu-service，取得餐點資訊 snapshots。
      */
-    private List<ItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
+    private List<InternalItemSnapshotResponse> getItemDetails(List<InternalItemRequest> requests) {
         return RestClient.create().post()
                 .uri(backendMenuServiceURL + "/api/menu/internal/getItemSnapshot")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -94,11 +97,11 @@ public class PlaceOrderService {
     /**
      * 計算總價。
      */
-    private BigDecimal calculateTotalPrice(List<ItemSnapshotResponse> items) {
+    private BigDecimal calculateTotalPrice(List<InternalItemSnapshotResponse> items) {
         return items.stream().map(this::calculateItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private BigDecimal calculateItemPrice(ItemSnapshotResponse item) {
+    private BigDecimal calculateItemPrice(InternalItemSnapshotResponse item) {
 
         BigDecimal basePrice = item.getBasePrice();
         BigDecimal doughPrice = item.getDough().getExtraPrice();
@@ -106,7 +109,7 @@ public class PlaceOrderService {
         BigDecimal addOnsPrice = item.getAddons() != null
                 ? item.getAddons()
                 .stream()
-                .map(AddonResponse::getExtraPrice)
+                .map(AddOnDetailResponse::getExtraPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 : BigDecimal.ZERO;
 
@@ -119,9 +122,9 @@ public class PlaceOrderService {
      */
     private Order createNewOrder(UUID memberId,
                                  String username,
-                                 PlaceOrderRequest request,
+                                 OrderPlacementRequest request,
                                  BigDecimal totalPrice,
-                                 List<ItemSnapshotResponse> itemDetails) {
+                                 List<InternalItemSnapshotResponse> itemDetails) {
 
         Order newOrder = new Order();
         newOrder.setMemberId(memberId);
@@ -133,13 +136,15 @@ public class PlaceOrderService {
         newOrder.setReceiveDate(request.getReceiveDate());
         newOrder.setIsEdited(false);
         newOrder.setEditedAt(null);
+        newOrder.setIsCompleted(false);
         newOrder.setOrderStatus("訂單待確認");
+        newOrder.setIsPaid(false);
         newOrder.setPaymentStatus("付款待確認");
         newOrder.setTotalPrice(totalPrice);
         orderRepos.save(newOrder);
 
         // 以下是將從 menu-service 拿到的 snapshot 寫入資料庫的步驟。
-        for (ItemSnapshotResponse item : itemDetails) {
+        for (InternalItemSnapshotResponse item : itemDetails) {
             OrderDetail newDetail = new OrderDetail();
             newDetail.setOrder(newOrder);
             newDetail.setItemId(item.getItemId());
@@ -176,7 +181,7 @@ public class PlaceOrderService {
     /**
      * 包裝 LINE Pay Request Body。
      */
-    private LinePayReqForm createLinePayForm(Order order, List<ItemSnapshotResponse> itemDetails) {
+    private LinePayReqForm createLinePayForm(Order order, List<InternalItemSnapshotResponse> itemDetails) {
 
         String confirmRedirectURL = frontendURL + "/cart/payment/line-pay/confirm?orderId=" + order.getId();
         String cancelRedirectURL = frontendURL + "/cart/payment/line-pay/cancel";
@@ -200,7 +205,7 @@ public class PlaceOrderService {
             BigDecimal addOnsPrice = item.getAddons() != null
                     ? item.getAddons()
                     .stream()
-                    .map(AddonResponse::getExtraPrice)
+                    .map(AddOnDetailResponse::getExtraPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     : BigDecimal.ZERO;
             BigDecimal doughPrice = item.getDough().getExtraPrice();
@@ -210,7 +215,7 @@ public class PlaceOrderService {
             String addOns = item.getAddons() != null
                     ? item.getAddons()
                     .stream()
-                    .map(AddonResponse::getName)
+                    .map(AddOnDetailResponse::getName)
                     .collect(Collectors.joining(", "))
                     : "";
             product.setName(item.getItemName()
@@ -247,10 +252,10 @@ public class PlaceOrderService {
      * 建立訂單 new OrderPayment 的邏輯，而不是實際付款的程序。<br>
      * 回傳為 Redirect URL。
      */
-    private PlaceOrderResponse createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayReqForm form) {
+    private OrderPlacementResponse createPayment(Order order, String paymentMethod, BigDecimal amount, LinePayReqForm form) {
 
         OrderPayment newPayment = new OrderPayment();
-        PlaceOrderResponse response = new PlaceOrderResponse();
+        OrderPlacementResponse response = new OrderPlacementResponse();
         newPayment.setOrder(order);
 
         switch (paymentMethod) {

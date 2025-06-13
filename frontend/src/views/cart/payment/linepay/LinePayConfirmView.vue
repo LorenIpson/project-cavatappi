@@ -19,7 +19,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:8080/api/order/payment/confirm', null, {
+    const response = await axios.post('http://localhost:8080/api/order/payment/line-pay/confirm', null, {
       params: {
         orderId: orderId,
       }

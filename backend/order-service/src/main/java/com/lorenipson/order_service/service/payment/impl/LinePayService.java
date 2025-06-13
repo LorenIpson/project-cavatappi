@@ -109,6 +109,7 @@ public class LinePayService {
                 String returnCode = response.get("returnCode").asText();
                 System.out.println("=== RETURN CODE ===" + returnCode);
                 if ("0000".equals(returnCode)) {
+                    targetOrder.setIsPaid(true);
                     targetOrder.setPaymentStatus("已使用 LINE Pay 付款。");
                     targetPayment.setPaymentTime(LocalDateTime.now());
                     orderPaymentRepos.save(targetPayment);
