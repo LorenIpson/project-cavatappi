@@ -27,7 +27,9 @@ public class OrderDetailResponse {
     private LocalDateTime receiveDate;
     private boolean edited;
     private LocalDateTime editedAt;
+    private boolean completed;
     private String orderStatus;
+    private boolean paid;
     private String paymentStatus;
     private BigDecimal totalPrice;
     private String paymentMethod;

@@ -30,14 +30,14 @@ public class AdminOrderQueryController {
     }
 
     @GetMapping("/api/admin/order/get/all")
-    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrders(@PageableDefault Pageable pageable) {
-        Page<OrderPreviewResponse> response = orderQueryService.getAllOrders(pageable);
+    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrderPreview(@PageableDefault Pageable pageable) {
+        Page<OrderPreviewResponse> response = orderQueryService.getAllOrdersPreview(pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/admin/order/get/details/{id}")
-    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(orderQueryService.getOrder(id));
+    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("id") Long orderId) {
+        return ResponseEntity.ok(orderQueryService.getOrderByOrderId(orderId));
     }
 
 }

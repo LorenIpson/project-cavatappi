@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderQueryService {
@@ -49,11 +46,35 @@ public class OrderQueryService {
 
     }
 
-    public Page<OrderPreviewResponse> getAllOrders(Pageable pageable) {
+    public Page<OrderPreviewResponse> getAllOrdersPreview(Pageable pageable) {
 
-        Page<Order> allOrderList = orderRepos.findAll(pageable); // 取得所有ㄉ訂單
-        List<OrderPreviewResponse> mainResponse = toOrderBriefResponse(allOrderList);
-        return new PageImpl<>(mainResponse, pageable, allOrderList.getTotalElements());
+        Page<Order> allOrderList = orderRepos.findAll(pageable);
+        List<OrderPreviewResponse> response = toOrderBriefResponse(allOrderList);
+        return new PageImpl<>(response, pageable, allOrderList.getTotalElements());
+
+    }
+
+    public Page<OrderPreviewResponse> getAllOrdersPreviewByMemberId(UUID memberId, Pageable pageable) {
+
+        Page<Order> byMemberId = orderRepos.findByMemberId(memberId, pageable);
+        List<OrderPreviewResponse> response = toOrderBriefResponse(byMemberId);
+        return new PageImpl<>(response, pageable, byMemberId.getTotalElements());
+
+    }
+
+    public Page<OrderPreviewResponse> getMemberOrdersPreviewByIsNotCompleted(UUID memberId, Pageable pageable) {
+
+        Page<Order> byMemberIdAndIsCompleted = orderRepos.findByMemberIdAndIsCompleted(memberId, false, pageable);
+        List<OrderPreviewResponse> response = toOrderBriefResponse(byMemberIdAndIsCompleted);
+        return new PageImpl<>(response, pageable, byMemberIdAndIsCompleted.getTotalElements());
+
+    }
+
+    public Page<OrderPreviewResponse> getMemberOrdersPreviewByIsNotPaid(UUID memberId, Pageable pageable) {
+
+        Page<Order> byMemberIdAndIsPaid = orderRepos.findByMemberIdAndIsPaid(memberId, false, pageable);
+        List<OrderPreviewResponse> response = toOrderBriefResponse(byMemberIdAndIsPaid);
+        return new PageImpl<>(response, pageable, byMemberIdAndIsPaid.getTotalElements());
 
     }
 
@@ -70,7 +91,9 @@ public class OrderQueryService {
             orderResponse.setOrderedDate(order.getOrderedDate());
             orderResponse.setReceiveDate(order.getReceiveDate());
             orderResponse.setEdited(order.getIsEdited());
+            orderResponse.setCompleted(order.getIsCompleted());
             orderResponse.setOrderStatus(order.getOrderStatus());
+            orderResponse.setPaid(order.getIsPaid());
             orderResponse.setPaymentStatus(order.getPaymentStatus());
             orderResponse.setTotalPrice(order.getTotalPrice());
 
@@ -97,9 +120,14 @@ public class OrderQueryService {
 
     }
 
-    public OrderDetailResponse getOrder(Long orderId) {
+    public OrderDetailResponse getOrderByOrderId(Long orderId) {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        return toOrderDetailResponse(targetOrder);
+
+    }
+
+    private OrderDetailResponse toOrderDetailResponse(Order targetOrder) {
         List<OrderDetail> targetOrderItems = orderDetailsRepos.findByOrder(targetOrder);
         OrderPayment targetOrderPayment = orderPaymentRepos.findByOrder(targetOrder)
                 .orElseThrow(EntityNotFoundException::new);
@@ -115,7 +143,9 @@ public class OrderQueryService {
         mainResponse.setReceiveDate(targetOrder.getReceiveDate());
         mainResponse.setEdited(targetOrder.getIsEdited());
         mainResponse.setEditedAt(targetOrder.getEditedAt());
+        mainResponse.setCompleted(targetOrder.getIsCompleted());
         mainResponse.setOrderStatus(targetOrder.getOrderStatus());
+        mainResponse.setPaid(targetOrder.getIsPaid());
         mainResponse.setPaymentStatus(targetOrder.getPaymentStatus());
         mainResponse.setTotalPrice(targetOrder.getTotalPrice());
         mainResponse.setPaymentMethod(targetOrderPayment.getPaymentMethod());
@@ -131,8 +161,15 @@ public class OrderQueryService {
             mainResponseItems.add(orderItems);
         });
         mainResponse.setItems(mainResponseItems);
-
         return mainResponse;
+
+    }
+
+    public OrderDetailResponse getOrderByOrderIdAndMemberId(UUID memberId, Long orderId) {
+
+        Order targetOrder = orderRepos.findByMemberIdAndId(memberId, orderId)
+                .orElseThrow(EntityNotFoundException::new);
+        return toOrderDetailResponse(targetOrder);
 
     }
 
