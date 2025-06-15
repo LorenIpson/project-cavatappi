@@ -21,7 +21,7 @@ const handleLogout = () => {
 
 <template>
   <ul class="menu bg-base-200 rounded-box w-full">
-    <li>
+    <li @click="router.push('/profile/my-order')">
       <a class="text-base">
         <svg
           xmlns="http://www.w3.org/2000/svg"

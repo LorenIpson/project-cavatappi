@@ -11,6 +11,8 @@ import ProfileView from "@/views/profile/ProfileView.vue";
 import LoginView from "@/views/profile/login/LoginView.vue";
 import RegisterView from "@/views/profile/register/RegisterView.vue";
 import OAuthCallbackView from "@/views/profile/OAuthCallbackView.vue";
+import MyOrderView from "@/views/profile/order/MyOrderView.vue";
+import MyOrderDetailVIew from "@/views/profile/order/MyOrderDetailVIew.vue";
 
 const routes = [
 
@@ -36,7 +38,11 @@ const routes = [
   {path: '/profile', name: 'Profile', component: ProfileView},
   {path: '/profile/login', name: 'Login', component: LoginView},
   {path: '/profile/register', name: 'Registration', component: RegisterView},
-  {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView}
+  {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
+
+  // PROFILE - MY ORDER
+  {path: '/profile/my-order', name: 'My-Order', component: MyOrderView},
+  {path: '/profile/my-order/detail/:orderId', name: 'My-Order-Detail', component: MyOrderDetailVIew}
 
 ]
 

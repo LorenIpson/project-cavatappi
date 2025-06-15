@@ -31,8 +31,9 @@ public class OrderDetailResponse {
     private String orderStatus;
     private boolean paid;
     private String paymentStatus;
-    private BigDecimal totalPrice;
     private String paymentMethod;
+    private String paymentRedirectURL;
+    private BigDecimal totalPrice;
 
     private List<OrderDetailItemResponse> items;
 
