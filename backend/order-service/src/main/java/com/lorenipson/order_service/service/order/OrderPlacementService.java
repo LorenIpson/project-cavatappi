@@ -276,7 +276,7 @@ public class OrderPlacementService {
                 newPayment.setTransactionId(linePayReqResponse.getTransactionId());
                 newPayment.setRedirectUrl(linePayReqResponse.getWebUrl());
                 newPayment.setPaymentTime(null);
-                order.setPaymentStatus("Line Pay 付款預約中");
+                order.setPaymentStatus("Line Pay 未完成");
                 response.setSuccess(true);
                 response.setExternal(true);
                 response.setRedirectURL(linePayReqResponse.getWebUrl());
@@ -286,7 +286,7 @@ public class OrderPlacementService {
                 newPayment.setProvider("PAYPAL");
                 newPayment.setTransactionId(null);
                 newPayment.setPaymentTime(null);
-                order.setPaymentStatus("付款成功");
+                order.setPaymentStatus("Paypal 未完成");
                 response.setSuccess(true);
                 response.setExternal(true);
                 response.setRedirectURL("/cart/payment/error");

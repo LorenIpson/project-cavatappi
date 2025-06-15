@@ -147,8 +147,9 @@ public class OrderQueryService {
         mainResponse.setOrderStatus(targetOrder.getOrderStatus());
         mainResponse.setPaid(targetOrder.getIsPaid());
         mainResponse.setPaymentStatus(targetOrder.getPaymentStatus());
-        mainResponse.setTotalPrice(targetOrder.getTotalPrice());
         mainResponse.setPaymentMethod(targetOrderPayment.getPaymentMethod());
+        mainResponse.setPaymentRedirectURL(targetOrderPayment.getRedirectUrl());
+        mainResponse.setTotalPrice(targetOrder.getTotalPrice());
 
         List<OrderDetailItemResponse> mainResponseItems = new ArrayList<>();
         targetOrderItems.forEach(orderItem -> {
