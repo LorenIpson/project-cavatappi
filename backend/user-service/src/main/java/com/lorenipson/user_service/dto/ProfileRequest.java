@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ProfileRequest {
 
-    @NotBlank
     @Size(max = 30)
     private String firstName;
 
