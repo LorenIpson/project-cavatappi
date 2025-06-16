@@ -10,6 +10,7 @@ import LinePayCancelView from "@/views/cart/payment/linepay/LinePayCancelView.vu
 import ProfileView from "@/views/profile/ProfileView.vue";
 import LoginView from "@/views/profile/login/LoginView.vue";
 import RegisterView from "@/views/profile/register/RegisterView.vue";
+import ProfileEditView from "@/views/profile/edit/ProfileEditView.vue";
 import OAuthCallbackView from "@/views/profile/OAuthCallbackView.vue";
 import MyOrderView from "@/views/profile/order/MyOrderView.vue";
 import MyOrderDetailVIew from "@/views/profile/order/MyOrderDetailVIew.vue";
@@ -38,6 +39,7 @@ const routes = [
   {path: '/profile', name: 'Profile', component: ProfileView},
   {path: '/profile/login', name: 'Login', component: LoginView},
   {path: '/profile/register', name: 'Registration', component: RegisterView},
+  {path: '/profile/edit', name: 'Profile-Edit', component: ProfileEditView},
   {path: '/oauth/callback', name: 'OAuth-Callback', component: OAuthCallbackView},
 
   // PROFILE - MY ORDER

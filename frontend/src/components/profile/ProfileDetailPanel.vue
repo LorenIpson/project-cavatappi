@@ -1,24 +1,19 @@
 <!--suppress ALL -->
 <script setup>
 
+import axiosApi from "@/composables/useAxios.js";
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
-import axios from "axios";
-import {useMemberStore} from "@/stores/memberStore.js";
 import {useToast} from "@/composables/useToast.js";
+import ToastAlert from "@/components/essential/ToastAlert.vue";
 
-const memberStore = useMemberStore();
+const {showToast} = useToast();
 const router = useRouter();
 const userProfile = ref('');
-const {resultMessage, resultType, showToast} = useToast();
 
 onMounted(async () => {
   try {
-    const response = await axios.get("http://localhost:8080/api/user/profile/me", {
-      headers: {
-        Authorization: `Bearer ${memberStore.token}`
-      }
-    });
+    const response = await axiosApi.get('http://localhost:8080/api/user/profile/me');
     userProfile.value = response.data;
   } catch (e) {
     console.error(e);
@@ -54,6 +49,20 @@ onMounted(async () => {
       {{ userProfile.phone }}
     </li>
 
+    <li class="col-span-4 ml-1">姓氏</li>
+    <li
+      class="col-span-8 text-right text-gray-600 truncate max-w-full tooltip"
+      :data-tip="userProfile.lastName">
+      {{ userProfile.lastName }}
+    </li>
+
+    <li class="col-span-4 ml-1">名字</li>
+    <li
+      class="col-span-8 text-right text-gray-600 truncate max-w-full tooltip"
+      :data-tip="userProfile.firstName">
+      {{ userProfile.firstName }}
+    </li>
+
     <li class="col-span-4 ml-1">地址</li>
     <li
       class="col-span-8 text-right text-gray-600 truncate max-w-full tooltip"
@@ -62,5 +71,7 @@ onMounted(async () => {
     </li>
 
   </ul>
+
+  <ToastAlert/>
 
 </template>

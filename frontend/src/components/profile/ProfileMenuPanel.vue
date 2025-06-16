@@ -64,7 +64,7 @@ const handleLogout = () => {
         通知
       </a>
     </li>
-    <li>
+    <li @click="router.push('/profile/edit')">
       <a class="text-base">
         <svg class="h-5 w-5" viewBox="0 0 24 24" stroke-width="1.5" fill="none"
              xmlns="http://www.w3.org/2000/svg" color="#000000">
