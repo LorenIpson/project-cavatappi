@@ -7,9 +7,11 @@ import ToastAlert from "@/components/essential/ToastAlert.vue";
 import {useToast} from "@/composables/useToast.js";
 import router from "@/router/index.js";
 import {useCartStore} from "@/stores/cartStore.js";
+import {useMemberStore} from "@/stores/memberStore.js";
 
 const {showToast} = useToast();
 
+const memberStore = useMemberStore();
 const cartStore = useCartStore();
 const cartLocalItems = cartStore.items;
 const cartItemList = ref(null);
@@ -26,8 +28,15 @@ const calculateTotalPrice = computed(() => {
   }, 0);
 });
 
-// TODO: 如購物車是空的，不開放跳轉。
 const goToCheckout = () => {
+  if (cartStore.items && cartStore.items.length === 0) {
+    showToast('購物車內還沒有餐點', 'info')
+    return;
+  }
+  if (!memberStore.isLoggedIn) {
+    showToast('請先登入才能進行結帳', 'info');
+    return;
+  }
   router.push({
     path: '/cart/checkout',
     state: {
@@ -41,7 +50,7 @@ const handleRemoveItem = (itemSeqId, itemName) => {
   console.log(itemSeqId);
   cartStore.removeItem(itemSeqId);
   cartItemList.value = cartItemList.value.filter(item => item.itemSeqId !== itemSeqId);
-  showToast('成功移除 ' + itemName,'success')
+  showToast('成功移除 ' + itemName, 'success')
 };
 
 onMounted(async () => {
@@ -64,6 +73,12 @@ onMounted(async () => {
 
 <template>
 
+  <div v-if="cartStore.items && cartStore.items.length === 0"
+       class=" bg-base-100 rounded-box  text-center py-16 m-20">
+    <p class="text-lg text-gray-600 mb-2">購物車是空的</p>
+    <p class="text-sm text-gray-400">請在菜單頁面進行點餐</p>
+  </div>
+
   <CartItemCard
     v-for="item in cartItemList"
     :key="item.itemSeqId"
@@ -71,15 +86,17 @@ onMounted(async () => {
     @remove-item="handleRemoveItem"
   />
 
-  <div class="p-4 bg-base-100 rounded-2xl shadow-md">
-    <div class="flex justify-between pb-2">
-      <div class="pl-14">總價</div>
-      <div class="pr-14">{{ calculateTotalPrice }}</div>
-    </div>
-    <div class="flex justify-center">
-      <button @click="goToCheckout" class="btn btn-wide btn-primary w-full max-w-2xl mt-1">
-        結帳
-      </button>
+  <div v-if="cartStore.items && cartStore.items.length > 0">
+    <div class="p-4 bg-base-100 rounded-2xl shadow-md">
+      <div class="flex justify-between pb-2">
+        <div class="pl-14">總價</div>
+        <div class="pr-14">{{ calculateTotalPrice }}</div>
+      </div>
+      <div class="flex justify-center">
+        <button @click="goToCheckout" class="btn btn-wide btn-primary w-full max-w-2xl mt-1">
+          結帳
+        </button>
+      </div>
     </div>
   </div>
 

@@ -3,7 +3,7 @@
 import {computed} from "vue";
 
 const {order} = defineProps(['order']);
-const stepStages = ['收到訂單', '正在準備餐點', '等待取餐', '訂單完成'];
+const stepStages = ['確認訂單', '正在準備餐點', '等待取餐', '訂單完成'];
 
 const currentStepIndex = computed(() => {
   return stepStages.indexOf(order.orderStatus);

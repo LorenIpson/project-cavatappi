@@ -34,13 +34,25 @@ public class OrderQueryService {
         this.orderPaymentRepos = orderPaymentRepos;
     }
 
-    public Page<OrderPreviewResponse> getAllOrdersByDate(LocalDate date, Pageable pageable) {
+    public Page<OrderPreviewResponse> getAllOrdersPreviewByDate(LocalDate date, Pageable pageable) {
 
         LocalDate targetDate = (date != null) ? date : LocalDate.now();
         LocalDateTime startOfDay = targetDate.atStartOfDay();
         LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
 
         Page<Order> orders = orderRepos.findAllByReceiveDateBetween(startOfDay, endOfDay, pageable);
+        List<OrderPreviewResponse> mainResponse = toOrderBriefResponse(orders);
+        return new PageImpl<>(mainResponse, pageable, orders.getTotalElements());
+
+    }
+
+    public Page<OrderPreviewResponse> getAllOrdersPreviewByDateAndNotCompleted(LocalDate date, Pageable pageable) {
+
+        LocalDate targetDate = (date != null) ? date : LocalDate.now();
+        LocalDateTime startOfDay = targetDate.atStartOfDay();
+        LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
+
+        Page<Order> orders = orderRepos.findAllByReceiveDateBetweenAndIsCompleted(startOfDay, endOfDay, false, pageable);
         List<OrderPreviewResponse> mainResponse = toOrderBriefResponse(orders);
         return new PageImpl<>(mainResponse, pageable, orders.getTotalElements());
 
@@ -87,6 +99,7 @@ public class OrderQueryService {
 
             orderResponse.setOrderId(order.getId());
             orderResponse.setBuyerName(order.getBuyerName());
+            orderResponse.setBuyerPhone(order.getBuyerPhone());
             orderResponse.setBuyerMessage(order.getBuyerMessage());
             orderResponse.setOrderedDate(order.getOrderedDate());
             orderResponse.setReceiveDate(order.getReceiveDate());

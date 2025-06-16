@@ -21,4 +21,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByMemberIdAndIsPaid(UUID memberId, Boolean isPaid, Pageable pageable);
 
     Optional<Order> findByMemberIdAndId(UUID memberId, Long id);
+
+    Page<Order> findAllByReceiveDateBetweenAndIsCompleted(LocalDateTime receiveDateAfter, LocalDateTime receiveDateBefore, Boolean isCompleted, Pageable pageable);
 }
