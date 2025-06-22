@@ -5,11 +5,10 @@ import router from "@/router/index.js";
 
 <template>
 
-  <div class="card bg-base-100 w-full shadow-sm mb-5 max-w-lg mx-auto">
-    <div class="card-body p-4">
+    <div class="card-body p-0.5 w-full">
 
       <div class="mb-1">
-        <span class="text-xl font-semibold">商店管理面板</span>
+<!--        <span class="text-xl font-semibold">商店管理面板</span>-->
       </div>
 
       <ul class="menu bg-base-200 rounded-box w-full">
@@ -56,7 +55,7 @@ import router from "@/router/index.js";
             通知
           </a>
         </li>
-        <li @click="">
+        <li @click="router.push('/cavatappi/admin/menu')">
           <a class="text-base">
             <svg class="h-5 w-5" viewBox="0 0 24 24" stroke-width="1.5" fill="none"
                  xmlns="http://www.w3.org/2000/svg" color="#000000">
@@ -85,7 +84,6 @@ import router from "@/router/index.js";
       </ul>
 
     </div>
-  </div>
 
 
 

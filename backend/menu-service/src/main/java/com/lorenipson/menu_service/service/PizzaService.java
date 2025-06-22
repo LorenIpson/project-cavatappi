@@ -43,7 +43,8 @@ public class PizzaService {
             pizza.setDescription(request.getDescription());
         }
         if (request.getImageBase64() != null) {
-            byte[] decoded = Base64.getDecoder().decode(request.getImageBase64());
+            String base64 = request.getImageBase64().split(",")[1];
+            byte[] decoded = Base64.getDecoder().decode(base64);
             pizza.setImage(decoded);
         }
         pizza.setBasePrice(request.getBasePrice());
