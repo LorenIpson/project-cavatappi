@@ -10,6 +10,7 @@ export const useMemberStore = defineStore('member', () => {
   const adult = ref(null);
 
   const isLoggedIn = computed(() => !!token.value);
+  const isAdmin = computed(() => authorities.value.includes("ROLE_ADMIN"));
 
   function decodeJwtPayload(token) {
 
@@ -95,6 +96,7 @@ export const useMemberStore = defineStore('member', () => {
     authorities,
     adult,
     isLoggedIn,
+    isAdmin,
     setLogin,
     logout,
     restoreLogin

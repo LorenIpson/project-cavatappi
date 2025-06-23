@@ -41,15 +41,15 @@ public class SecurityConfig {
                         // order-service
                         .requestMatchers("/api/order/place-new-order/**").permitAll()
                         .requestMatchers("/api/order/payment/line-pay/confirm/**").permitAll()
-                        .requestMatchers("/api/order/get/**").permitAll()
                         .requestMatchers("/api/order/my-order/**").permitAll()
 
                         // order-service-cart
                         .requestMatchers("/api/order/cart/preview/**").permitAll()
 
                         // order-service-status
-                        .requestMatchers("/api/order/*/confirm/**").permitAll()
-                        .requestMatchers("/api/order/*/status/**").permitAll()
+                        .requestMatchers("/api/admin/order/get/**").permitAll()
+                        .requestMatchers("/api/admin/order/*/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

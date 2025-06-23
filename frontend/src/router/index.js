@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {useMemberStore} from "@/stores/memberStore.js";
 import HomeView from "@/views/HomeView.vue";
 import MenuView from "@/views/menu/MenuView.vue";
 import CartView from "@/views/cart/CartView.vue";
@@ -14,6 +15,21 @@ import ProfileEditView from "@/views/profile/edit/ProfileEditView.vue";
 import OAuthCallbackView from "@/views/profile/OAuthCallbackView.vue";
 import MyOrderView from "@/views/profile/order/MyOrderView.vue";
 import MyOrderDetailVIew from "@/views/profile/order/MyOrderDetailVIew.vue";
+import AdminDashView from "@/views/admin/AdminDashView.vue";
+import AdminOrderView from "@/views/admin/order/AdminOrderView.vue";
+import AdminMenuView from "@/views/admin/menu/AdminMenuView.vue";
+
+const requireAdmin = (to, from, next) => {
+  const memberStore = useMemberStore();
+  if (!memberStore.isLoggedIn) {
+    console.error('請先登入');
+    next('/profile/login');
+  }
+  if (!memberStore.isAdmin) {
+    console.error('沒有管理員權限');
+    next('/');
+  }
+};
 
 const routes = [
 
@@ -44,7 +60,12 @@ const routes = [
 
   // PROFILE - MY ORDER
   {path: '/profile/my-order', name: 'My-Order', component: MyOrderView},
-  {path: '/profile/my-order/detail/:orderId', name: 'My-Order-Detail', component: MyOrderDetailVIew}
+  {path: '/profile/my-order/detail/:orderId', name: 'My-Order-Detail', component: MyOrderDetailVIew},
+
+  // ADMIN
+  {path: '/cavatappi/admin', name: 'Admin', component: AdminDashView, beforeEnter: requireAdmin},
+  {path: '/cavatappi/admin/order', name: 'Admin-Order', component: AdminOrderView, beforeEnter: requireAdmin},
+  {path: '/cavatappi/admin/menu', name: 'Admin-Menu', component: AdminMenuView, beforeEnter: requireAdmin}
 
 ]
 

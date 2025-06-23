@@ -19,6 +19,7 @@ public class OrderPreviewResponse {
 
     private Long orderId;
     private String buyerName;
+    private String buyerPhone;
     private String buyerMessage;
     private LocalDateTime orderedDate;
     private LocalDateTime receiveDate;

@@ -9,6 +9,7 @@ import ToastAlert from "@/components/essential/ToastAlert.vue";
 const {showToast} = useToast();
 const currentTab = ref('isNotCompleted'); // isNotCompleted, all, isNotPaid
 const orders = ref([]);
+const loading = ref(true);
 
 const handleFetchIsNotCompletedOrders = async () => {
   try {
@@ -19,6 +20,8 @@ const handleFetchIsNotCompletedOrders = async () => {
   } catch (e) {
     showToast('取得正在處理的訂單時出錯了，請重新整理', 'error')
     console.log(e);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -30,6 +33,8 @@ const handleFetchAllOrders = async () => {
   } catch (e) {
     showToast('取得所有訂單時出錯了，請重新整理', 'error');
     console.log(e);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -41,6 +46,8 @@ const handleFetchIsNotPaidOrders = async () => {
   } catch (e) {
     showToast('取得未付款的訂單時出錯了，請重新整理', 'error');
     console.log(e);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -76,7 +83,7 @@ onMounted(() => {
     </a>
   </div>
 
-  <div v-if="orders.length ===0" class="text-center py-16">
+  <div v-if="orders.length ===0 && !loading" class="text-center py-16">
     <p class="text-lg text-gray-600 mb-2">沒有訂單</p>
     <p class="text-sm text-gray-400">該分類的訂單並不存在</p>
   </div>

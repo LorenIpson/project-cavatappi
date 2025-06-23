@@ -23,14 +23,23 @@ public class AdminOrderQueryController {
         this.orderQueryService = orderQueryService;
     }
 
+    /**
+     * 依照取餐日期查詢。
+     * */
     @GetMapping("/api/admin/order/get/by/date")
-    public ResponseEntity<Page<OrderPreviewResponse>> getOrderBriefByDate(@RequestParam(required = false) LocalDate date, @PageableDefault Pageable pageable) {
-        Page<OrderPreviewResponse> response = orderQueryService.getAllOrdersByDate(date, pageable);
+    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrdersPreviewByDate(@RequestParam(required = false) LocalDate date, @PageableDefault Pageable pageable) {
+        Page<OrderPreviewResponse> response = orderQueryService.getAllOrdersPreviewByDate(date, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/admin/order/get/by/is-not-completed/date")
+    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrdersByDateAndNotCompleted(@RequestParam(required = false) LocalDate date, @PageableDefault Pageable pageable) {
+        Page<OrderPreviewResponse> response = orderQueryService.getAllOrdersPreviewByDateAndNotCompleted(date, pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/admin/order/get/all")
-    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrderPreview(@PageableDefault Pageable pageable) {
+    public ResponseEntity<Page<OrderPreviewResponse>> getAllOrdersPreview(@PageableDefault Pageable pageable) {
         Page<OrderPreviewResponse> response = orderQueryService.getAllOrdersPreview(pageable);
         return ResponseEntity.ok(response);
     }

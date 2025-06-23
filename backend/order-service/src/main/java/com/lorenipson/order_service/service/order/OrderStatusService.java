@@ -21,7 +21,8 @@ public class OrderStatusService {
     public String confirmOrder(Long orderId) {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
-        targetOrder.setOrderStatus("收到訂單");
+        targetOrder.setOrderStatus("確認訂單");
+        targetOrder.setIsCompleted(false);
         orderRepos.save(targetOrder);
         return "訂單：" + orderId + "，已確認。";
 
@@ -31,6 +32,7 @@ public class OrderStatusService {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
         targetOrder.setOrderStatus("正在準備餐點");
+        targetOrder.setIsCompleted(false);
         orderRepos.save(targetOrder);
         return "訂單：" + orderId + "，正在準備。";
 
@@ -40,6 +42,7 @@ public class OrderStatusService {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
         targetOrder.setOrderStatus("等待取餐");
+        targetOrder.setIsCompleted(false);
         orderRepos.save(targetOrder);
         return "訂單：" + orderId + "，已製作完成。";
 
@@ -48,7 +51,12 @@ public class OrderStatusService {
     public String orderCompleted(Long orderId) {
 
         Order targetOrder = orderRepos.findById(orderId).orElseThrow(EntityNotFoundException::new);
-        targetOrder.setOrderStatus("等待取餐");
+        targetOrder.setOrderStatus("訂單完成");
+        targetOrder.setIsCompleted(true);
+        if (targetOrder.getPaymentStatus().equals("待取餐付款")) {
+            targetOrder.setIsPaid(true);
+            targetOrder.setPaymentStatus("已取餐付款");
+        }
         orderRepos.save(targetOrder);
         return "訂單：" + orderId + "，已完成結帳取餐。";
 
