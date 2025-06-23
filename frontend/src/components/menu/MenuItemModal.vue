@@ -2,10 +2,13 @@
 
 import {useCartStore} from "@/stores/cartStore.js";
 import {computed, ref} from "vue";
+import ToastAlert from "@/components/essential/ToastAlert.vue";
+import {useToast} from "@/composables/useToast.js";
 
 const emit = defineEmits(["close-modal"]);
 const props = defineProps(['item']);
 const cartLocal = useCartStore();
+const {showToast} = useToast();
 
 const selectedSizeId = ref(null);
 const selectedDoughId = ref(null);
@@ -51,7 +54,7 @@ const calculateTotalPrice = computed(() => {
 const addToCartLocal = () => {
   console.log('Add to cart 觸發');
   if (!selectedSizeId.value || !selectedDoughId.value) {
-    console.log('尺寸和餅皮沒選到');
+    showToast('請確認尺寸和餅皮', 'error');
     return;
   }
 
@@ -63,7 +66,7 @@ const addToCartLocal = () => {
     doughId: selectedDoughId.value,
     addons: selectedAddOnIds.value.map(id => ({addonId: id}))
   };
-  console.log('成功加入 Local storage');
+  showToast('成功加入購物車', 'success');
   cartLocal.addItem(item);
   emit("close-modal");
 };
@@ -71,7 +74,6 @@ const addToCartLocal = () => {
 </script>
 
 <template>
-
   <Teleport to="body">
     <div
       class="fixed inset-0 z-40 flex items-center justify-center backdrop-blur-sm bg-black/40 p-2"
@@ -137,7 +139,7 @@ const addToCartLocal = () => {
             <label
               v-for="addOn in item.addons.filter(a => a.available)"
               :key="addOn.addonId"
-              class="flex items-center justify-between p-2 rounded-lg border"
+              class="flex items-center justify-between mb-2 rounded-lg "
             >
               <!--suppress HtmlUnknownTag -->
               <div class="flex items-center gap-2">
@@ -174,6 +176,7 @@ const addToCartLocal = () => {
         </div>
 
       </div>
+      <ToastAlert/>
     </div>
   </Teleport>
 

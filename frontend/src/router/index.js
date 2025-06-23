@@ -63,9 +63,9 @@ const routes = [
   {path: '/profile/my-order/detail/:orderId', name: 'My-Order-Detail', component: MyOrderDetailVIew},
 
   // ADMIN
-  {path: '/cavatappi/admin', name: 'Admin', component: AdminDashView, beforeEnter: requireAdmin()},
+  {path: '/cavatappi/admin', name: 'Admin', component: AdminDashView, beforeEnter: requireAdmin},
   {path: '/cavatappi/admin/order', name: 'Admin-Order', component: AdminOrderView, beforeEnter: requireAdmin},
-  {path: '/cavatappi/admin/menu', name: 'Admin-Menu', component: AdminMenuView, beforeEnter: requireAdmin},
+  {path: '/cavatappi/admin/menu', name: 'Admin-Menu', component: AdminMenuView, beforeEnter: requireAdmin}
 
 ]
 
