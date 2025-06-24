@@ -2,7 +2,7 @@
 
 import {onMounted, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import axios from 'axios';
+import axiosApi from "@/composables/useAxios.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -19,11 +19,16 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:8080/api/order/payment/line-pay/confirm', null, {
+    const response = await axiosApi.post('/api/order/payment/line-pay/confirm', null, {
       params: {
         orderId: orderId,
       }
     });
+    /*    const response = await axios.post('http://localhost:8080/api/order/payment/line-pay/confirm', null, {
+          params: {
+            orderId: orderId,
+          }
+        });*/
 
     console.log('付款完成：', response.data);
     router.push('/cart/payment/success');

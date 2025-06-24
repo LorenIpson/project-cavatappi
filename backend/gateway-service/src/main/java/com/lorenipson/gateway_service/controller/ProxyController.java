@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
+@Deprecated
 @RestController
 public class ProxyController {
 
@@ -19,6 +20,7 @@ public class ProxyController {
         this.jwtUtils = jwtUtils;
     }
 
+    @Deprecated
     @GetMapping("/proxy/api/user/home")
     public ResponseEntity<?> forwardProxy(@RequestHeader("Authorization") String header) {
 

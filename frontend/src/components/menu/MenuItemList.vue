@@ -2,10 +2,10 @@
 
 import {onMounted, ref} from "vue";
 import {useToast} from "@/composables/useToast.js";
-import axios from "axios";
+import axiosApi from "@/composables/useAxios.js";
 import MenuItemCard from "@/components/menu/MenuItemCard.vue";
-import ToastAlert from "@/components/essential/ToastAlert.vue";
 import MenuItemModal from "@/components/menu/MenuItemModal.vue";
+import ToastAlert from "@/components/essential/ToastAlert.vue";
 
 const {showToast} = useToast();
 const itemList = ref([]);
@@ -15,7 +15,7 @@ const isModalOpen = ref(false);
 const handleOpenModal = async (pizzaId) => {
   try {
     console.log(pizzaId + ' MODAL');
-    const response = await axios.get(`http://localhost:8080/api/menu/pizza/get/${pizzaId}`)
+    const response = await axiosApi.get(`/api/menu/pizza/get/${pizzaId}`);
     itemDetails.value = response.data;
     isModalOpen.value = true;
     console.log(pizzaId + ' MODAL 2');
@@ -28,7 +28,7 @@ const handleOpenModal = async (pizzaId) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/menu/pizza/get/all');
+    const response = await axiosApi.get('/api/menu/pizza/get/all');
     itemList.value = response.data.content;
   } catch (e) {
     showToast("取得餐點時出錯，請重新整理", "error");

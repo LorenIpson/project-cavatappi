@@ -1,13 +1,13 @@
 <script setup>
 
+import router from "@/router/index.js";
+import axiosApi from "@/composables/useAxios.js";
 import {computed, onMounted, ref} from "vue";
-import axios from "axios";
+import {useMemberStore} from "@/stores/memberStore.js";
+import {useCartStore} from "@/stores/cartStore.js";
+import {useToast} from "@/composables/useToast.js";
 import CartItemCard from "@/components/cart/CartItemCard.vue";
 import ToastAlert from "@/components/essential/ToastAlert.vue";
-import {useToast} from "@/composables/useToast.js";
-import router from "@/router/index.js";
-import {useCartStore} from "@/stores/cartStore.js";
-import {useMemberStore} from "@/stores/memberStore.js";
 
 const {showToast} = useToast();
 
@@ -55,7 +55,7 @@ const handleRemoveItem = (itemSeqId, itemName) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.post("http://localhost:8080/api/order/cart/preview", cartLocalItems);
+    const response = await axiosApi.post('/api/order/cart/preview', cartLocalItems);
     cartItemList.value = response.data.map((item, index) => {
       const localItem = cartLocalItems[index];
       return {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {useMemberStore} from "@/stores/memberStore.js";
 
+// TODO: Hardcode backend url
 const axiosApi = axios.create({
   baseURL: 'http://localhost:8080',
 });
