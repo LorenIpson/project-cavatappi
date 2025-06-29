@@ -1,6 +1,6 @@
 services:
   user-db:
-    image: secondround/postgres-zh
+    image: custom-postgres:zh-tw
     container_name: user-db
     environment:
       POSTGRES_DB: user_db
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   menu-db:
-    image: secondround/postgres-zh
+    image: custom-postgres:zh-tw
     container_name: menu-db
     environment:
       POSTGRES_DB: menu_db
@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   order-db:
-    image: secondround/postgres-zh
+    image: custom-postgres:zh-tw
     container_name: order-db
     environment:
       POSTGRES_DB: order_db
