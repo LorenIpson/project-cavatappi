@@ -68,11 +68,11 @@ const handleRegister = async () => {
     console.log(e);
   }
 
-}
+};
 
-const loginWithGoogle = async () => {
-  // TODO: hardcode google oauth
-  window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+const loginWithGoogle = () => {
+  const gatewayBaseUrl = import.meta.env.VITE_API_URL;
+  window.location.href = `${gatewayBaseUrl}/oauth2/authorization/google`;
 };
 
 </script>

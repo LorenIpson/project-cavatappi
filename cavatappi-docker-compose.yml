@@ -44,6 +44,105 @@ services:
       - cavatappi-net
     restart: unless-stopped
 
+  gateway-service:
+    build:
+      context: ./backend/gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    env_file:
+      - .env
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
+    ports:
+      - "8080:8080"
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./backend/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    env_file:
+      - .env
+    environment:
+      DB_USER_DB_USERNAME: ${USER_DB_USERNAME}
+      DB_USER_DB_PASSWORD: ${USER_DB_PASSWORD}
+      DB_USER_DB_URL: ${USER_DB_URL}
+      OAUTH_USER_GOOGLE_CLIENT_ID: ${OAUTH_USER_GOOGLE_CLIENT_ID}
+      OAUTH_USER_GOOGLE_CLIENT_SECRET: ${OAUTH_USER_GOOGLE_CLIENT_SECRET}
+      GOOGLE_LOGIN_REDIRECT_URL: ${GOOGLE_LOGIN_REDIRECT_URL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_KEY_VALID_SECONDS: ${JWT_KEY_VALID_SECONDS}
+      FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      - user-db
+    ports:
+      - "8081:8081"
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+  menu-service:
+    build:
+      context: ./backend/menu-service
+      dockerfile: Dockerfile
+    container_name: menu-service
+    env_file:
+      - .env
+    environment:
+      DB_USER_DB_URL: ${MENU_DB_URL}
+      DB_USER_DB_USERNAME: ${MENU_DB_USERNAME}
+      DB_USER_DB_PASSWORD: ${MENU_DB_PASSWORD}
+    depends_on:
+      - menu-db
+    ports:
+      - "8082:8082"
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./backend/order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    env_file:
+      - .env
+    environment:
+      DB_USER_DB_URL: ${ORDER_DB_URL}
+      DB_USER_DB_USERNAME: ${ORDER_DB_USERNAME}
+      DB_USER_DB_PASSWORD: ${ORDER_DB_PASSWORD}
+      BACKEND_MENU_SERVICE_URL: ${BACKEND_MENU_SERVICE_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      LINE_PAY_STORE_ID: ${LINE_PAY_STORE_ID}
+      LINE_PAY_CHANNEL_ID: ${LINE_PAY_CHANNEL_ID}
+      LINE_PAY_CHANNEL_SECRET: ${LINE_PAY_CHANNEL_SECRET}
+    depends_on:
+      - order-db
+    ports:
+      - "8083:8083"
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - cavatappi-net
+    restart: unless-stopped
+
 volumes:
   user_pgdata:
   menu_pgdata:
