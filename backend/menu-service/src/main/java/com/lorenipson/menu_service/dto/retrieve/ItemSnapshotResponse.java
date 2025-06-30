@@ -14,6 +14,7 @@ public class ItemSnapshotResponse {
 
     private Long itemId;
     private String itemName;
+    private byte[] itemImage;
     private BigDecimal basePrice;
     private SizeResponse size;
     private DoughResponse dough;

@@ -13,7 +13,7 @@
     </figure>
     <div class="card-body">
       <h2 class="card-title">
-        PLACE HOLDER
+        PLACEHOLDER
         <div class="badge badge-secondary">新上市</div>
       </h2>
       <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
