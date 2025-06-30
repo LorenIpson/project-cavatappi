@@ -1,6 +1,7 @@
 <script setup>
 
 import logo from '@/assets/logo/Pizza Slice.png'
+import router from "@/router/index.js";
 
 </script>
 
@@ -8,7 +9,7 @@ import logo from '@/assets/logo/Pizza Slice.png'
 
   <div class="navbar bg-base-100">
     <a class="flex items-center mx-auto">
-      <img :src="logo" alt="logo" class="h-13"/>
+      <img @click="router.push('/')" :src="logo" alt="logo" class="h-13"/>
     </a>
   </div>
 
