@@ -13,9 +13,9 @@ const openItemModal = (pizzaId) => {
 
   <div class="card bg-base-100 w-full shadow-sm">
 
-    <figure><img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                 alt="Shoes"/></figure>
-    <!--<figure><img :src="'data:image/jpeg;base64,' + item.pizzaImage" alt="Shoes"/></figure>-->
+<!--    <figure><img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"-->
+<!--                 alt="Shoes"/></figure>-->
+    <figure><img :src="'data:image/jpeg;base64,' + item.pizzaImage" alt="Pizza"/></figure>
 
     <div class="card-body p-4">
       <h2 class="card-title justify-between">

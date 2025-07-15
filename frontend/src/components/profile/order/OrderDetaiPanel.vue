@@ -84,7 +84,7 @@ const handleGoToPaymentURL = () => {
             <span class="font-semibold col-span-5 ">口味</span>
             <div class="col-span-7 flex justify-between">
               <span class="">{{ item.itemName }}</span>
-              <span class="">NT$ {{ item.itemSpecs.sizeExtraPrice }}</span>
+              <span class="">NT$ {{ item.itemBasePrice }}</span>
             </div>
           </div>
 
@@ -92,7 +92,7 @@ const handleGoToPaymentURL = () => {
             <span class="font-semibold col-span-5 ">尺寸</span>
             <div class="col-span-7 flex justify-between">
               <span class="">{{ item.itemSpecs.size }}</span>
-              <span class="">NT$ {{ item.itemBasePrice }}</span>
+              <span class="">NT$ {{ item.itemSpecs.sizeExtraPrice }}</span>
             </div>
           </div>
 

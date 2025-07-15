@@ -2,9 +2,9 @@
 
 import {ref} from "vue";
 import router from "@/router/index.js";
-import axios from "axios";
-import ToastAlert from "@/components/essential/ToastAlert.vue";
+import axiosApi from "@/composables/useAxios.js";
 import {useToast} from "@/composables/useToast.js";
+import ToastAlert from "@/components/essential/ToastAlert.vue";
 
 const {showToast} = useToast();
 const form = ref({
@@ -58,8 +58,7 @@ const handleRegister = async () => {
   };
 
   try {
-    await axios
-      .post('http://localhost:8080/api/user/register/memberRegister', requestBody);
+    await axiosApi.post('/api/user/register/memberRegister', requestBody);
     showToast("註冊成功，請操作登入", "success");
     setTimeout(() => {
       router.push("/profile/login");
@@ -69,10 +68,11 @@ const handleRegister = async () => {
     console.log(e);
   }
 
-}
+};
 
-const loginWithGoogle = async () => {
-  window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+const loginWithGoogle = () => {
+  const gatewayBaseUrl = import.meta.env.VITE_API_URL;
+  window.location.href = `${gatewayBaseUrl}/oauth2/authorization/google`;
 };
 
 </script>

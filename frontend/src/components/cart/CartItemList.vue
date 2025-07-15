@@ -1,20 +1,23 @@
 <script setup>
 
-import {computed, onMounted, ref} from "vue";
+import router from "@/router/index.js";
 import axios from "axios";
+import {computed, onMounted, ref} from "vue";
+import {useMemberStore} from "@/stores/memberStore.js";
+import {useCartStore} from "@/stores/cartStore.js";
+import {useToast} from "@/composables/useToast.js";
 import CartItemCard from "@/components/cart/CartItemCard.vue";
 import ToastAlert from "@/components/essential/ToastAlert.vue";
-import {useToast} from "@/composables/useToast.js";
-import router from "@/router/index.js";
-import {useCartStore} from "@/stores/cartStore.js";
-import {useMemberStore} from "@/stores/memberStore.js";
 
 const {showToast} = useToast();
 
+const baseURL = import.meta.env.VITE_API_URL;
 const memberStore = useMemberStore();
 const cartStore = useCartStore();
 const cartLocalItems = cartStore.items;
 const cartItemList = ref(null);
+const isLoading = ref(true);
+const showSkeleton = computed(() => isLoading.value || !cartItemList.value);
 
 const calculateTotalPrice = computed(() => {
   if (!cartItemList.value) return 0;
@@ -55,7 +58,7 @@ const handleRemoveItem = (itemSeqId, itemName) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.post("http://localhost:8080/api/order/cart/preview", cartLocalItems);
+    const response = await axios.post(baseURL + '/api/order/cart/preview', cartLocalItems);
     cartItemList.value = response.data.map((item, index) => {
       const localItem = cartLocalItems[index];
       return {
@@ -66,6 +69,8 @@ onMounted(async () => {
   } catch (e) {
     showToast("取得購物車資訊時出錯了", "error");
     console.error(e);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -79,12 +84,23 @@ onMounted(async () => {
     <p class="text-sm text-gray-400">請在菜單頁面進行點餐</p>
   </div>
 
-  <CartItemCard
-    v-for="item in cartItemList"
-    :key="item.itemSeqId"
-    :item="item"
-    @remove-item="handleRemoveItem"
-  />
+  <div v-else-if="showSkeleton">
+    <div class="flex w-full flex-col gap-4 mb-5">
+      <div class="skeleton h-32 w-full"></div>
+      <div class="skeleton h-4 w-28"></div>
+      <div class="skeleton h-4 w-full"></div>
+      <div class="skeleton h-4 w-full"></div>
+    </div>
+  </div>
+
+  <div v-else>
+    <CartItemCard
+      v-for="item in cartItemList"
+      :key="item.itemSeqId"
+      :item="item"
+      @remove-item="handleRemoveItem"
+    />
+  </div>
 
   <div v-if="cartStore.items && cartStore.items.length > 0">
     <div class="p-4 bg-base-100 rounded-2xl shadow-md">

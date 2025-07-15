@@ -5,19 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemSnapshotResponse {
+public class LatestPizzaResponse {
 
-    private Long itemId;
-    private String itemName;
-    private byte[] itemImage;
+    private String name;
+    private String description;
+    private byte[] image;
     private BigDecimal basePrice;
-    private SizeResponse size;
-    private DoughResponse dough;
-    private List<AddonResponse> addons;
 
 }

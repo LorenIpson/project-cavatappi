@@ -27,8 +27,9 @@ const singlePrice = computed(() => {
 
       <!--<div class="text-4xl font-thin opacity-30 tabular-nums">01</div>-->
       <div><img class="size-10 rounded-box"
-                src="https://img.daisyui.com/images/profile/demo/1@94.webp"
-                alt="Yolo"/>
+                :src="'data:image/jpeg;base64,' + item.itemImage"
+                alt="Pizza"
+                />
       </div>
 
       <div class="list-col-grow">

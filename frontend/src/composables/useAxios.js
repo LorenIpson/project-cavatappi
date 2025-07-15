@@ -2,7 +2,7 @@ import axios from 'axios';
 import {useMemberStore} from "@/stores/memberStore.js";
 
 const axiosApi = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 axiosApi.interceptors.request.use(config => {

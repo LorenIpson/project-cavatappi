@@ -13,7 +13,7 @@ const userProfile = ref('');
 
 onMounted(async () => {
   try {
-    const response = await axiosApi.get('http://localhost:8080/api/user/profile/me');
+    const response = await axiosApi.get('/api/user/profile/me');
     userProfile.value = response.data;
   } catch (e) {
     console.error(e);

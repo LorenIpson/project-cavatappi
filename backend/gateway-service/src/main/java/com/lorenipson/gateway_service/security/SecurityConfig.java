@@ -26,7 +26,7 @@ public class SecurityConfig {
                         // user-service
                         .requestMatchers("/api/user/login/**").permitAll()
                         .requestMatchers("/api/user/register/**").permitAll()
-                        .requestMatchers("/api/user/profile/**").permitAll()
+                        .requestMatchers("/api/user/profile/**").authenticated()
 
                         // user-service-oauth
                         .requestMatchers("/api/user/oauth/authorization/github/**").permitAll()
@@ -36,19 +36,20 @@ public class SecurityConfig {
                         // menu-service
                         .requestMatchers("/api/menu/pizza/get/**").permitAll()
                         .requestMatchers("/api/menu/pizza/create/**").permitAll()
+                        .requestMatchers("/api/menu/ad/**").permitAll()
                         .requestMatchers("/proxy/api/**").permitAll()
 
                         // order-service
                         .requestMatchers("/api/order/place-new-order/**").permitAll()
                         .requestMatchers("/api/order/payment/line-pay/confirm/**").permitAll()
-                        .requestMatchers("/api/order/my-order/**").permitAll()
+                        .requestMatchers("/api/order/my-order/**").authenticated()
 
                         // order-service-cart
                         .requestMatchers("/api/order/cart/preview/**").permitAll()
 
                         // order-service-status
-                        .requestMatchers("/api/admin/order/get/**").permitAll()
-                        .requestMatchers("/api/admin/order/*/**").permitAll()
+                        .requestMatchers("/api/admin/order/get/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/order/*/**").hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated()
                 )

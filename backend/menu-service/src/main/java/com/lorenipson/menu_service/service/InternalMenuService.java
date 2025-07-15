@@ -45,6 +45,7 @@ public class InternalMenuService {
                             .orElseThrow(EntityNotFoundException::new);
                     snapshotResponse.setItemId(request.getItemId());
                     snapshotResponse.setItemName(targetPizza.getName());
+                    snapshotResponse.setItemImage(targetPizza.getImage());
                     snapshotResponse.setBasePrice(targetPizza.getBasePrice());
                     System.out.println("============== NAME");
 

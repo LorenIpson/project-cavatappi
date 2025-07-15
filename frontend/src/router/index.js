@@ -21,6 +21,7 @@ import AdminMenuView from "@/views/admin/menu/AdminMenuView.vue";
 
 const requireAdmin = (to, from, next) => {
   const memberStore = useMemberStore();
+  console.log(memberStore.isAdmin);
   if (!memberStore.isLoggedIn) {
     console.error('請先登入');
     next('/profile/login');
@@ -29,6 +30,7 @@ const requireAdmin = (to, from, next) => {
     console.error('沒有管理員權限');
     next('/');
   }
+  return next();
 };
 
 const routes = [
